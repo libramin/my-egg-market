@@ -1,17 +1,33 @@
+import 'package:beamer/beamer.dart';
 import 'package:flutter/material.dart';
-import 'package:my_egg_market/splash_screen.dart';
+import 'package:my_egg_market/router/locations.dart';
+import 'package:my_egg_market/screens/splash_screen.dart';
+
+final _routerDelegate = BeamerDelegate(
+    guards: [
+      BeamGuard(
+        pathPatterns: ['/'],
+        check: (context, location) {
+          return false;
+        },
+        beamToNamed: (origin, target) => '/auth',
+        // showPage: BeamPage(child: AuthScreen()))
+      )
+    ],
+    locationBuilder:
+        BeamerLocationBuilder(beamLocations: [HomeLocation(), AuthLocation()]));
 
 void main() {
-  runApp(const MyEggApp());
+  runApp(const MyApp());
 }
 
-class MyEggApp extends StatelessWidget {
-  const MyEggApp({Key? key}) : super(key: key);
+class MyApp extends StatelessWidget {
+  const MyApp({Key? key}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
     return FutureBuilder(
-        future: Future.delayed(Duration(seconds: 2), () => 100),
+        future: Future.delayed(Duration(seconds: 1), () => 100),
         builder: (context, snapshot) {
           return AnimatedSwitcher(
               duration: Duration(milliseconds: 300),
@@ -35,8 +51,9 @@ class EggApp extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Container(
-      color: Colors.orange,
+    return MaterialApp.router(
+      routeInformationParser: BeamerParser(),
+      routerDelegate: _routerDelegate,
     );
   }
 }
