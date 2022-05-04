@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:my_egg_market/screens/start/intro_page.dart';
 
 class AuthScreen extends StatelessWidget {
   const AuthScreen({Key? key}) : super(key: key);
@@ -6,8 +7,12 @@ class AuthScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      body: Center(
-        child: Text('Auth'),
+      body: PageView(
+        children: [
+          IntroPage(),
+          Container(color: Colors.green,),
+          Container(color: Colors.tealAccent,)
+        ],
       ),
     );
   }

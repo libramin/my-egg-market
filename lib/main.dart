@@ -54,6 +54,10 @@ class EggApp extends StatelessWidget {
     return MaterialApp.router(
       routeInformationParser: BeamerParser(),
       routerDelegate: _routerDelegate,
+      theme: ThemeData(
+        primarySwatch: Colors.orange,
+        textTheme: TextTheme(button: TextStyle(color: Colors.white,fontWeight: FontWeight.w600))
+      ),
     );
   }
 }
