@@ -56,8 +56,15 @@ class EggApp extends StatelessWidget {
       routerDelegate: _routerDelegate,
       theme: ThemeData(
         primarySwatch: Colors.orange,
-        textTheme: TextTheme(button: TextStyle(color: Colors.white,fontWeight: FontWeight.w600))
-      ),
+        textTheme: TextTheme(button: TextStyle(color: Colors.white,fontWeight: FontWeight.w600)),
+        hintColor: Colors.grey[400],
+        appBarTheme: AppBarTheme(
+          backgroundColor: Colors.white,
+          elevation: 0.4,
+        ),
+        textButtonTheme: TextButtonThemeData(
+          style: TextButton.styleFrom(backgroundColor: Colors.orange,primary: Colors.white,minimumSize: Size(47, 47))),
+        )
     );
   }
 }
