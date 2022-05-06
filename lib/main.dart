@@ -2,20 +2,22 @@ import 'package:beamer/beamer.dart';
 import 'package:flutter/material.dart';
 import 'package:my_egg_market/router/locations.dart';
 import 'package:my_egg_market/screens/splash_screen.dart';
+import 'package:my_egg_market/screens/start_screen.dart';
+import 'package:my_egg_market/states/user_provider.dart';
+import 'package:provider/provider.dart';
 
 final _routerDelegate = BeamerDelegate(
     guards: [
       BeamGuard(
-        pathPatterns: ['/'],
+          pathBlueprints: ['/'],
         check: (context, location) {
-          return false;
+          return context.watch<UserProvider>().userState;
         },
-        beamToNamed: (origin, target) => '/auth',
-        // showPage: BeamPage(child: AuthScreen()))
+        showPage: BeamPage(child: StartScreen()),
       )
     ],
     locationBuilder:
-        BeamerLocationBuilder(beamLocations: [HomeLocation(), AuthLocation()]));
+        BeamerLocationBuilder(beamLocations: [HomeLocation()]));
 
 void main() {
   runApp(const MyApp());
@@ -30,7 +32,7 @@ class MyApp extends StatelessWidget {
         future: Future.delayed(Duration(seconds: 1), () => 100),
         builder: (context, snapshot) {
           return AnimatedSwitcher(
-              duration: Duration(milliseconds: 300),
+              duration: const Duration(milliseconds: 300),
               child: _splashLoadingWidget(snapshot));
         });
   }
@@ -51,20 +53,29 @@ class EggApp extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return MaterialApp.router(
-      routeInformationParser: BeamerParser(),
-      routerDelegate: _routerDelegate,
-      theme: ThemeData(
-        primarySwatch: Colors.orange,
-        textTheme: TextTheme(button: TextStyle(color: Colors.white,fontWeight: FontWeight.w600)),
-        hintColor: Colors.grey[400],
-        appBarTheme: AppBarTheme(
-          backgroundColor: Colors.white,
-          elevation: 0.4,
-        ),
-        textButtonTheme: TextButtonThemeData(
-          style: TextButton.styleFrom(backgroundColor: Colors.orange,primary: Colors.white,minimumSize: Size(47, 47))),
-        )
+    return ChangeNotifierProvider<UserProvider>(
+      create: (BuildContext context) {
+        return UserProvider();
+      },
+      child: MaterialApp.router(
+          routeInformationParser: BeamerParser(),
+          routerDelegate: _routerDelegate,
+          theme: ThemeData(
+            primarySwatch: Colors.orange,
+            textTheme: const TextTheme(
+                button: TextStyle(
+                    color: Colors.white, fontWeight: FontWeight.w600)),
+            hintColor: Colors.grey[400],
+            appBarTheme: const AppBarTheme(
+              backgroundColor: Colors.white,
+              elevation: 0.4,
+            ),
+            textButtonTheme: TextButtonThemeData(
+                style: TextButton.styleFrom(
+                    backgroundColor: Colors.orange,
+                    primary: Colors.white,
+                    minimumSize: const Size(47, 47))),
+          )),
     );
   }
 }

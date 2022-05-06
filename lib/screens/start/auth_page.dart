@@ -1,6 +1,8 @@
-import 'package:flutter/cupertino.dart';
+import 'package:flutter/widgets.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_multi_formatter/formatters/masked_input_formatter.dart';
+import 'package:my_egg_market/states/user_provider.dart';
+import 'package:provider/provider.dart';
 
 class AuthPage extends StatefulWidget {
   AuthPage({Key? key}) : super(key: key);
@@ -134,7 +136,7 @@ class _AuthPageState extends State<AuthPage> {
                               if(_NumFormKey.currentState !=null){
                                 bool sucess = _NumFormKey.currentState!.validate();
                                 if(sucess){
-                                  attempVerify();
+                                  attempVerify(context);
                                 }
                               }
                             },
@@ -168,16 +170,19 @@ class _AuthPageState extends State<AuthPage> {
     }
   }
 
-  void attempVerify() async {
+  void attempVerify(BuildContext context) async {
     setState(() {
       _verificationStatus = VerificationStatus.verifying;
     });
 
-    await Future.delayed(Duration(seconds: 3));
+    await Future.delayed(Duration(seconds: 2));
 
     setState(() {
       _verificationStatus = VerificationStatus.verificationDone;
     });
+
+    context.read<UserProvider>().setUserAuth(true);
+    print(context.read<UserProvider>().userState);
   }
 }
 
