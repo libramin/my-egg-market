@@ -83,18 +83,18 @@ class _AuthPageState extends State<AuthPage> {
                     SizedBox(height: 10),
                     TextButton(
                         onPressed: () {
-                          // if (_phoneNumFormKey.currentState != null) {
-                          //   bool passed = _phoneNumFormKey.currentState!.validate();
-                          //   if (passed) {
-                          //     setState(() {
-                          //       _verificationStatus =
-                          //           VerificationStatus.codeSent;
-                          //     });
-                          //   }
-                          // }
+                          if (_phoneNumFormKey.currentState != null) {
+                            bool passed = _phoneNumFormKey.currentState!.validate();
+                            if (passed) {
+                              setState(() {
+                                _verificationStatus =
+                                    VerificationStatus.codeSent;
+                              });
+                            }
+                          }
 
                           //임시저장 테스트
-                          _getAddress();
+                          // _getAddress();
                         },
                         child: Text('인증문자 발송')),
                     SizedBox(height: 20),

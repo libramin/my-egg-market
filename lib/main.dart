@@ -20,6 +20,7 @@ final _routerDelegate = BeamerDelegate(
         BeamerLocationBuilder(beamLocations: [HomeLocation()]));
 
 void main() {
+  Provider.debugCheckInvalidValueType = null;
   runApp(const MyApp());
 }
 

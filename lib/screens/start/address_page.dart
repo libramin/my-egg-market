@@ -1,6 +1,7 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:my_egg_market/data/AddressModel.dart';
+import 'package:provider/provider.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import '../../data/nowAddressModel.dart';
 import 'address_service.dart';
@@ -19,6 +20,12 @@ class _AddressPageState extends State<AddressPage> {
   SearchAddressModel? _searchAddressModel;
   List<NowAddressModel> _nowAddresses = [];
   bool _isGettingLocation = false;
+
+  @override
+  void dispose() {
+    _addressController.dispose();
+    super.dispose();
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -116,7 +123,7 @@ class _AddressPageState extends State<AddressPage> {
                 }
                 return ListTile(
                   onTap: (){
-                    _saveAddressOnSharedPreference(_searchAddressModel!
+                    _saveAddressAndGoToNextPage(_searchAddressModel!
                         .result!.items![index].address!.road??'');
                   },
                   title: Text(_searchAddressModel!
@@ -145,7 +152,7 @@ class _AddressPageState extends State<AddressPage> {
                   }
                   return ListTile(
                     onTap: (){
-                      _saveAddressOnSharedPreference(_nowAddresses[index].result![0].text??'');
+                      _saveAddressAndGoToNextPage(_nowAddresses[index].result![0].text??'');
                     },
                     title: Text(_nowAddresses[index].result![0].text ??
                         ''),
@@ -159,6 +166,14 @@ class _AddressPageState extends State<AddressPage> {
         ],
       ),
     );
+  }
+
+  _saveAddressAndGoToNextPage(String address) async{
+    await _saveAddressOnSharedPreference(address);
+
+    context.read<PageController>().animateToPage(2,
+        duration: Duration(milliseconds: 500),
+        curve: Curves.ease);
   }
 
   _saveAddressOnSharedPreference(String address)async{

@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
 
 class IntroPage extends StatelessWidget {
-  PageController pageController;
-  IntroPage(this.pageController, {Key? key}) : super(key: key);
+  IntroPage({Key? key}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
@@ -39,7 +39,7 @@ class IntroPage extends StatelessWidget {
                 children: [
                   TextButton(
                     onPressed: () {
-                      pageController.animateToPage(1,
+                      context.read<PageController>().animateToPage(1,
                           duration: Duration(milliseconds: 500),
                           curve: Curves.ease);
                     },
