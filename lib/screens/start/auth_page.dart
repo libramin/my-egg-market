@@ -24,6 +24,12 @@ class _AuthPageState extends State<AuthPage> {
   VerificationStatus _verificationStatus = VerificationStatus.none;
 
   @override
+  void dispose() {
+    _numController.dispose();
+    super.dispose();
+  }
+
+  @override
   Widget build(BuildContext context) {
     return LayoutBuilder(
       builder: (BuildContext context, BoxConstraints constraints) {
