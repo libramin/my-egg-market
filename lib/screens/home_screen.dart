@@ -1,9 +1,19 @@
 import 'package:flutter/material.dart';
+import 'package:my_egg_market/states/user_provider.dart';
+import 'package:provider/provider.dart';
 class HomeScreen extends StatelessWidget {
   const HomeScreen({Key? key}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
-    return Container(color: Colors.pink,);
+    return Scaffold(
+      appBar: AppBar(
+        actions: [
+          IconButton(onPressed: (){
+            context.read<UserProvider>().setUserAuth(false);
+          }, icon: Icon(Icons.logout))
+        ],
+      ),
+    );
   }
 }
