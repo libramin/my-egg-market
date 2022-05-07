@@ -1,7 +1,9 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:my_egg_market/data/AddressModel.dart';
+import '../../data/nowAddressModel.dart';
 import 'address_service.dart';
+import 'package:location/location.dart';
 
 class AddressPage extends StatefulWidget {
   AddressPage({Key? key}) : super(key: key);
@@ -13,7 +15,9 @@ class AddressPage extends StatefulWidget {
 class _AddressPageState extends State<AddressPage> {
   TextEditingController _addressController = TextEditingController();
 
-  AddressModel? _addressModel;
+  SearchAddressModel? _searchAddressModel;
+  List<NowAddressModel> _nowAddresses = [];
+  bool _isGettingLocation = false;
 
   @override
   Widget build(BuildContext context) {
@@ -24,6 +28,14 @@ class _AddressPageState extends State<AddressPage> {
         children: [
           TextFormField(
             controller: _addressController,
+            onFieldSubmitted: (text) async {
+              //사용자가 키보드 완료를 눌러야만 작동
+              _nowAddresses.clear();
+              final text = _addressController.text;
+              _searchAddressModel =
+                  await AdderessService().searchAddressBystr(text);
+              setState(() {});
+            },
             decoration: InputDecoration(
               hintText: '도로명으로 검색',
               prefixIcon: Icon(
@@ -35,47 +47,107 @@ class _AddressPageState extends State<AddressPage> {
             ),
           ),
           TextButton.icon(
-            onPressed: () async{
-              FocusScope.of(context).unfocus();
-              final text = _addressController.text;
-              _addressModel = await AdderessService().searchAddressBystr(text);
+            onPressed: () async {
+              _searchAddressModel = null;
+              _nowAddresses.clear();
               setState(() {
+                _isGettingLocation = true;
+              });
+              Location location = new Location();
 
+              bool _serviceEnabled;
+              PermissionStatus _permissionGranted;
+              LocationData _locationData;
+
+              _serviceEnabled = await location.serviceEnabled();
+              if (!_serviceEnabled) {
+                _serviceEnabled = await location.requestService();
+                if (!_serviceEnabled) {
+                  return;
+                }
+              }
+
+              _permissionGranted = await location.hasPermission();
+              if (_permissionGranted == PermissionStatus.denied) {
+                _permissionGranted = await location.requestPermission();
+                if (_permissionGranted != PermissionStatus.granted) {
+                  return;
+                }
+              }
+              _locationData = await location.getLocation();
+
+              _nowAddresses.addAll(await AdderessService()
+                  .findAddressByCoordinate(
+                      log: _locationData.longitude!,
+                      lat: _locationData.latitude!));
+
+              setState(() {
+                _isGettingLocation = false;
               });
             },
-            icon: Icon(
-              CupertinoIcons.compass,
-              size: 20,
-            ),
-            label: Text('현재 위치 찾기'),
+            icon: _isGettingLocation
+                ? SizedBox(
+                    width: 22,
+                    height: 22,
+                    child: CircularProgressIndicator(
+                      color: Colors.white,
+                    ))
+                : Icon(
+                    CupertinoIcons.compass,
+                    size: 20,
+                  ),
+            label: Text(_isGettingLocation ? '위치 찾는 중...' : '현재 위치 찾기'),
             style: TextButton.styleFrom(
                 // minimumSize: Size(10,50)
                 ),
           ),
+          if(_searchAddressModel != null)
           Expanded(
             child: ListView.builder(
               padding: EdgeInsets.symmetric(vertical: 16),
               itemBuilder: (context, index) {
-                if (_addressModel == null ||
-                    _addressModel!.result == null ||
-                    _addressModel!.result!.items == null ||
-                    _addressModel!.result!.items![index].address == null) {
+                if (_searchAddressModel == null ||
+                    _searchAddressModel!.result == null ||
+                    _searchAddressModel!.result!.items == null ||
+                    _searchAddressModel!.result!.items![index].address ==
+                        null) {
                   return Container();
                 }
                 return ListTile(
-                  title: Text(
-                      _addressModel!.result!.items![index].address!.road??''),
-                  subtitle: Text(
-                      _addressModel!.result!.items![index].address!.parcel??''),
+                  title: Text(_searchAddressModel!
+                          .result!.items![index].address!.road ??
+                      ''),
+                  subtitle: Text(_searchAddressModel!
+                          .result!.items![index].address!.parcel ??
+                      ''),
                 );
               },
-              itemCount: (_addressModel == null ||
-                      _addressModel!.result == null ||
-                      _addressModel!.result!.items == null)
+              itemCount: (_searchAddressModel == null ||
+                      _searchAddressModel!.result == null ||
+                      _searchAddressModel!.result!.items == null)
                   ? 0
-                  : _addressModel!.result!.items!.length,
+                  : _searchAddressModel!.result!.items!.length,
             ),
-          )
+          ),
+          if(_nowAddresses.isNotEmpty)
+            Expanded(
+              child: ListView.builder(
+                padding: EdgeInsets.symmetric(vertical: 16),
+                itemBuilder: (context, index) {
+                  if (_nowAddresses[index].result == null ||
+                      _nowAddresses[index].result!.isEmpty) {
+                    return Container();
+                  }
+                  return ListTile(
+                    title: Text(_nowAddresses[index].result![0].text ??
+                        ''),
+                    subtitle: Text(_nowAddresses[index].result![0].zipcode ??
+                        ''),
+                  );
+                },
+                itemCount: _nowAddresses.length,
+              ),
+            ),
         ],
       ),
     );
