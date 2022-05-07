@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_multi_formatter/formatters/masked_input_formatter.dart';
 import 'package:my_egg_market/states/user_provider.dart';
 import 'package:provider/provider.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 class AuthPage extends StatefulWidget {
   AuthPage({Key? key}) : super(key: key);
@@ -82,15 +83,18 @@ class _AuthPageState extends State<AuthPage> {
                     SizedBox(height: 10),
                     TextButton(
                         onPressed: () {
-                          if (_phoneNumFormKey.currentState != null) {
-                            bool passed = _phoneNumFormKey.currentState!.validate();
-                            if (passed) {
-                              setState(() {
-                                _verificationStatus =
-                                    VerificationStatus.codeSent;
-                              });
-                            }
-                          }
+                          // if (_phoneNumFormKey.currentState != null) {
+                          //   bool passed = _phoneNumFormKey.currentState!.validate();
+                          //   if (passed) {
+                          //     setState(() {
+                          //       _verificationStatus =
+                          //           VerificationStatus.codeSent;
+                          //     });
+                          //   }
+                          // }
+
+                          //임시저장 테스트
+                          _getAddress();
                         },
                         child: Text('인증문자 발송')),
                     SizedBox(height: 20),
@@ -184,6 +188,13 @@ class _AuthPageState extends State<AuthPage> {
     context.read<UserProvider>().setUserAuth(true);
     print(context.read<UserProvider>().userState);
   }
+
+  _getAddress()async{
+    final prefs = await SharedPreferences.getInstance();
+    final String? address = prefs.getString('address')??'';
+    print('my data : $address');
+  }
+
 }
 
 enum VerificationStatus { none, codeSent, verifying, verificationDone }

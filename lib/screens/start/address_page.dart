@@ -1,6 +1,7 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:my_egg_market/data/AddressModel.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 import '../../data/nowAddressModel.dart';
 import 'address_service.dart';
 import 'package:location/location.dart';
@@ -114,6 +115,10 @@ class _AddressPageState extends State<AddressPage> {
                   return Container();
                 }
                 return ListTile(
+                  onTap: (){
+                    _saveAddressOnSharedPreference(_searchAddressModel!
+                        .result!.items![index].address!.road??'');
+                  },
                   title: Text(_searchAddressModel!
                           .result!.items![index].address!.road ??
                       ''),
@@ -139,6 +144,9 @@ class _AddressPageState extends State<AddressPage> {
                     return Container();
                   }
                   return ListTile(
+                    onTap: (){
+                      _saveAddressOnSharedPreference(_nowAddresses[index].result![0].text??'');
+                    },
                     title: Text(_nowAddresses[index].result![0].text ??
                         ''),
                     subtitle: Text(_nowAddresses[index].result![0].zipcode ??
@@ -152,4 +160,10 @@ class _AddressPageState extends State<AddressPage> {
       ),
     );
   }
+
+  _saveAddressOnSharedPreference(String address)async{
+    final prefs = await SharedPreferences.getInstance();
+    await prefs.setString('address', address);
+  }
+
 }
