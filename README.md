@@ -1,4 +1,4 @@
-# my_egg_market
+# libramin-egg-market
 
 A new Flutter project.
 

@@ -1,4 +1,5 @@
 import 'package:beamer/beamer.dart';
+import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
 import 'package:my_egg_market/router/locations.dart';
 import 'package:my_egg_market/screens/splash_screen.dart';
@@ -20,17 +21,26 @@ final _routerDelegate = BeamerDelegate(
         BeamerLocationBuilder(beamLocations: [HomeLocation()]));
 
 void main() {
+  WidgetsFlutterBinding.ensureInitialized();
   Provider.debugCheckInvalidValueType = null;
   runApp(const MyApp());
 }
 
-class MyApp extends StatelessWidget {
+class MyApp extends StatefulWidget {
   const MyApp({Key? key}) : super(key: key);
+
+  @override
+  State<MyApp> createState() => _MyAppState();
+}
+
+class _MyAppState extends State<MyApp> {
+
+final Future<FirebaseApp> _initialization = Firebase.initializeApp();
 
   @override
   Widget build(BuildContext context) {
     return FutureBuilder(
-        future: Future.delayed(Duration(seconds: 1), () => 100),
+        future: _initialization,
         builder: (context, snapshot) {
           return AnimatedSwitcher(
               duration: const Duration(milliseconds: 300),
@@ -41,7 +51,7 @@ class MyApp extends StatelessWidget {
   StatelessWidget _splashLoadingWidget(AsyncSnapshot<Object?> snapshot) {
     if (snapshot.hasError) {
       return Container(color: Colors.blue);
-    } else if (snapshot.hasData) {
+    } else if (snapshot.connectionState == ConnectionState.done) {
       return EggApp();
     } else {
       return SplashScreen();
