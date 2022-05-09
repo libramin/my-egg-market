@@ -1,3 +1,4 @@
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:my_egg_market/screens/home/home_page.dart';
@@ -25,7 +26,8 @@ class _HomeScreenState extends State<HomeScreen> {
           IconButton(onPressed: (){}, icon: Icon(Icons.menu)),
           IconButton(onPressed: (){
             //임시 로그아웃 기능
-              context.read<UserProvider>().setUserAuth(false);
+            //   context.read<UserProvider>().setUserAuth(false);
+            FirebaseAuth.instance.signOut();
           }, icon: Icon(CupertinoIcons.bell)),
         ],
       ),

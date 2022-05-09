@@ -1,3 +1,4 @@
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/widgets.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_multi_formatter/formatters/masked_input_formatter.dart';
@@ -23,6 +24,9 @@ class _AuthPageState extends State<AuthPage> {
 
   VerificationStatus _verificationStatus = VerificationStatus.none;
 
+  String? _verificationId;
+  int? _forceResendingToken;
+
   @override
   void dispose() {
     _numController.dispose();
@@ -42,7 +46,7 @@ class _AuthPageState extends State<AuthPage> {
               title: Text('전화번호 로그인'),
             ),
             body: GestureDetector(
-              onTap: (){
+              onTap: () {
                 FocusScope.of(context).unfocus();
               },
               child: Padding(
@@ -88,28 +92,70 @@ class _AuthPageState extends State<AuthPage> {
                     ),
                     SizedBox(height: 10),
                     TextButton(
-                        onPressed: () {
+                        onPressed: () async {
+                          if(_verificationStatus == VerificationStatus.codeSending){
+                            return ;
+                          }
                           if (_phoneNumFormKey.currentState != null) {
-                            bool passed = _phoneNumFormKey.currentState!.validate();
+                            bool passed =
+                                _phoneNumFormKey.currentState!.validate();
                             if (passed) {
+                              String phoneNum = _phoneNumberController.text;
+                              phoneNum = phoneNum.replaceAll(' ', '');
+                              phoneNum = phoneNum.replaceFirst('0', '');
+
+                              FirebaseAuth auth = FirebaseAuth.instance;
                               setState(() {
                                 _verificationStatus =
-                                    VerificationStatus.codeSent;
+                                    VerificationStatus.codeSending;
                               });
+
+                              await auth.verifyPhoneNumber(
+                                  phoneNumber: '+82$phoneNum',
+                                  forceResendingToken: _forceResendingToken,
+                                  verificationCompleted:
+                                      (PhoneAuthCredential credential) async {
+                                    await auth.signInWithCredential(credential);
+                                  },
+                                  verificationFailed:
+                                      (FirebaseAuthException error) {
+                                    print(error.message);
+
+                                    setState(() {
+                                      _verificationStatus =
+                                          VerificationStatus.none;
+                                    });
+                                  },
+                                  codeSent: (String verificationId,
+                                      int? forceResendingToken) async {
+                                    setState(() {
+                                      _verificationStatus =
+                                          VerificationStatus.codeSent;
+                                    });
+
+                                    _verificationId = verificationId;
+                                    _forceResendingToken = forceResendingToken;
+                                  },
+                                  codeAutoRetrievalTimeout:
+                                      (String verificationId) {});
                             }
                           }
 
                           //임시저장 테스트
                           // _getAddress();
                         },
-                        child: Text('인증문자 발송')),
+                        child: (_verificationStatus ==
+                                VerificationStatus.codeSending)
+                            ? CircularProgressIndicator(
+                                color: Colors.white,
+                              )
+                            : Text('인증문자 발송')),
                     SizedBox(height: 20),
                     AnimatedOpacity(
                       duration: duration,
-                      opacity:
-                          (_verificationStatus == VerificationStatus.none)
-                              ? 0
-                              : 1,
+                      opacity: (_verificationStatus == VerificationStatus.none)
+                          ? 0
+                          : 1,
                       curve: Curves.easeInOut,
                       child: AnimatedContainer(
                         duration: duration,
@@ -125,10 +171,10 @@ class _AuthPageState extends State<AuthPage> {
                               border: OutlineInputBorder(
                                   borderSide: BorderSide(color: Colors.grey)),
                             ),
-                            validator: (num){
-                              if(num != null && num.length ==6){
+                            validator: (num) {
+                              if (num != null && num.length == 6) {
                                 return null;
-                              }else {
+                              } else {
                                 return '인증 번호를 재 확인해주세요';
                               }
                             },
@@ -138,21 +184,23 @@ class _AuthPageState extends State<AuthPage> {
                     ),
                     AnimatedContainer(
                         duration: duration,
-                        height:
-                            _getVerificationBtnHeight(_verificationStatus),
+                        height: _getVerificationBtnHeight(_verificationStatus),
                         curve: Curves.easeInOut,
                         child: TextButton(
                             onPressed: () {
-                              if(_NumFormKey.currentState !=null){
-                                bool sucess = _NumFormKey.currentState!.validate();
-                                if(sucess){
+                              if (_NumFormKey.currentState != null) {
+                                bool sucess =
+                                    _NumFormKey.currentState!.validate();
+                                if (sucess) {
                                   attempVerify(context);
                                 }
                               }
                             },
                             child: (_verificationStatus ==
                                     VerificationStatus.verifying)
-                                ? CircularProgressIndicator(color: Colors.white,)
+                                ? CircularProgressIndicator(
+                                    color: Colors.white,
+                                  )
                                 : Text('인증'))),
                   ],
                 ),
@@ -185,22 +233,32 @@ class _AuthPageState extends State<AuthPage> {
       _verificationStatus = VerificationStatus.verifying;
     });
 
-    await Future.delayed(Duration(seconds: 2));
+    try {
+      PhoneAuthCredential credential = PhoneAuthProvider.credential(
+          verificationId: _verificationId!, smsCode: _numController.text);
+
+      await FirebaseAuth.instance.signInWithCredential(credential);
+    } catch (e) {
+      print('faile!!');
+      ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text('코드 재확인')));
+    }
 
     setState(() {
       _verificationStatus = VerificationStatus.verificationDone;
     });
-
-    context.read<UserProvider>().setUserAuth(true);
-    print(context.read<UserProvider>().userState);
   }
 
-  _getAddress()async{
+  _getAddress() async {
     final prefs = await SharedPreferences.getInstance();
-    final String? address = prefs.getString('address')??'';
+    final String? address = prefs.getString('address') ?? '';
     print('my data : $address');
   }
-
 }
 
-enum VerificationStatus { none, codeSent, verifying, verificationDone }
+enum VerificationStatus {
+  none,
+  codeSending,
+  codeSent,
+  verifying,
+  verificationDone
+}
