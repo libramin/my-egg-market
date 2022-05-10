@@ -6,6 +6,8 @@ import 'package:my_egg_market/states/user_provider.dart';
 import 'package:provider/provider.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
+import '../../constants/keys.dart';
+
 class AuthPage extends StatefulWidget {
   AuthPage({Key? key}) : super(key: key);
 
@@ -248,11 +250,6 @@ class _AuthPageState extends State<AuthPage> {
     });
   }
 
-  _getAddress() async {
-    final prefs = await SharedPreferences.getInstance();
-    final String? address = prefs.getString('address') ?? '';
-    print('my data : $address');
-  }
 }
 
 enum VerificationStatus {

@@ -1,6 +1,5 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:my_egg_market/constants/user_service.dart';
 import 'package:shimmer/shimmer.dart';
 
 class HomePage extends StatelessWidget {
@@ -27,70 +26,65 @@ class HomePage extends StatelessWidget {
         return ListView.separated(
             padding: EdgeInsets.all(16),
             itemBuilder: (context, index) {
-              return InkWell(
-                onTap: (){
-                  UserService().readData();
-                },
-                child: SizedBox(
-                  height: imgSize,
-                  child: Row(
-                    children: [
-                      ClipRRect(
-                        borderRadius: BorderRadius.circular(8.0),
-                        child: Image.network(
-                          'https://picsum.photos/100',
+              return SizedBox(
+                height: imgSize,
+                child: Row(
+                  children: [
+                    ClipRRect(
+                      borderRadius: BorderRadius.circular(8.0),
+                      child: Image.network(
+                        'https://picsum.photos/100',
+                      ),
+                    ),
+                    SizedBox(
+                      width: 10,
+                    ),
+                    Expanded(
+                      child: Container(
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                          children: [
+                            Text('아페쎄 베티백', style: TextStyle(fontSize: 16)),
+                            Row(
+                              children: [
+                                Text('강북구 수유동 ',
+                                    style: TextStyle(
+                                        fontSize: 13, color: Colors.grey)),
+                                Text('• 10분전',
+                                    style: TextStyle(
+                                        fontSize: 13, color: Colors.grey)),
+                              ],
+                            ),
+                            Text('1000원',
+                                style: TextStyle(
+                                    fontSize: 17, fontWeight: FontWeight.bold)),
+                            Row(
+                              mainAxisAlignment: MainAxisAlignment.end,
+                              children: [
+                                Icon(
+                                  CupertinoIcons.chat_bubble_2,
+                                  color: Colors.grey,
+                                  size: 20,
+                                ),
+                                Text('12',
+                                    style: TextStyle(
+                                        fontSize: 13, color: Colors.grey)),
+                                Icon(
+                                  CupertinoIcons.heart,
+                                  color: Colors.grey,
+                                  size: 20,
+                                ),
+                                Text('4',
+                                    style: TextStyle(
+                                        fontSize: 13, color: Colors.grey)),
+                              ],
+                            )
+                          ],
                         ),
                       ),
-                      SizedBox(
-                        width: 10,
-                      ),
-                      Expanded(
-                        child: Container(
-                          child: Column(
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                            children: [
-                              Text('아페쎄 베티백', style: TextStyle(fontSize: 16)),
-                              Row(
-                                children: [
-                                  Text('강북구 수유동 ',
-                                      style: TextStyle(
-                                          fontSize: 13, color: Colors.grey)),
-                                  Text('• 10분전',
-                                      style: TextStyle(
-                                          fontSize: 13, color: Colors.grey)),
-                                ],
-                              ),
-                              Text('1000원',
-                                  style: TextStyle(
-                                      fontSize: 17, fontWeight: FontWeight.bold)),
-                              Row(
-                                mainAxisAlignment: MainAxisAlignment.end,
-                                children: [
-                                  Icon(
-                                    CupertinoIcons.chat_bubble_2,
-                                    color: Colors.grey,
-                                    size: 20,
-                                  ),
-                                  Text('12',
-                                      style: TextStyle(
-                                          fontSize: 13, color: Colors.grey)),
-                                  Icon(
-                                    CupertinoIcons.heart,
-                                    color: Colors.grey,
-                                    size: 20,
-                                  ),
-                                  Text('4',
-                                      style: TextStyle(
-                                          fontSize: 13, color: Colors.grey)),
-                                ],
-                              )
-                            ],
-                          ),
-                        ),
-                      )
-                    ],
-                  ),
+                    )
+                  ],
                 ),
               );
             },

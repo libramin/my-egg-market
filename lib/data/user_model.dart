@@ -28,6 +28,9 @@ class UserModel {
         : (json['createdTime'] as Timestamp).toDate();
   }
 
+  UserModel.fromSnapshot(DocumentSnapshot<Map<String,dynamic>> snapshot) :
+      this.fromJson(snapshot.data()!, snapshot.id, snapshot.reference);
+
   Map<String, dynamic> toJson() {
     final map = <String, dynamic>{};
     map['phoneNumber'] = phoneNumber;

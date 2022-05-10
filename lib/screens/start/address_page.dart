@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:my_egg_market/data/AddressModel.dart';
 import 'package:provider/provider.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+import '../../constants/keys.dart';
 import '../../data/nowAddressModel.dart';
 import 'address_service.dart';
 import 'package:location/location.dart';
@@ -124,7 +125,11 @@ class _AddressPageState extends State<AddressPage> {
                 return ListTile(
                   onTap: (){
                     _saveAddressAndGoToNextPage(_searchAddressModel!
-                        .result!.items![index].address!.road??'');
+                        .result!.items![index].address!.road??'',
+                        double.parse(_searchAddressModel!
+                            .result!.items![index].point!.y ?? '0'),
+                        double.parse(_searchAddressModel!
+                            .result!.items![index].point!.x ?? '0'));
                   },
                   title: Text(_searchAddressModel!
                           .result!.items![index].address!.road ??
@@ -152,7 +157,9 @@ class _AddressPageState extends State<AddressPage> {
                   }
                   return ListTile(
                     onTap: (){
-                      _saveAddressAndGoToNextPage(_nowAddresses[index].result![0].text??'');
+                      _saveAddressAndGoToNextPage(_nowAddresses[index].result![0].text??'',
+                          double.parse(_nowAddresses[index].input!.point!.y ?? '0'),
+                          double.parse(_nowAddresses[index].input!.point!.x ?? '0'));
                     },
                     title: Text(_nowAddresses[index].result![0].text ??
                         ''),
@@ -168,17 +175,19 @@ class _AddressPageState extends State<AddressPage> {
     );
   }
 
-  _saveAddressAndGoToNextPage(String address) async{
-    await _saveAddressOnSharedPreference(address);
+  _saveAddressAndGoToNextPage(String address, double lat, double lon) async{
+    await _saveAddressOnSharedPreference(address,lat,lon);
 
     context.read<PageController>().animateToPage(2,
         duration: Duration(milliseconds: 500),
         curve: Curves.ease);
   }
 
-  _saveAddressOnSharedPreference(String address)async{
+  _saveAddressOnSharedPreference(String address, double lat, double lon)async{
     final prefs = await SharedPreferences.getInstance();
-    await prefs.setString('address', address);
+    await prefs.setString(SHARED_ADDRESS, address);
+    await prefs.setDouble(SHARED_LAT, lat);
+    await prefs.setDouble(SHARED_LON, lon);
   }
 
 }
