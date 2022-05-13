@@ -1,3 +1,4 @@
+import 'package:beamer/beamer.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
@@ -86,7 +87,9 @@ class _HomeScreenState extends State<HomeScreen> {
       floatingActionButton: ExpandableFab(distance: 90, children: [
         MaterialButton(
           shape: CircleBorder(),
-            onPressed: (){},child: Icon(Icons.zoom_out_map_rounded),
+            onPressed: (){
+            context.beamToNamed('/input');
+            },child: Icon(Icons.add),
         color: Colors.orange[300],),
         MaterialButton(
           shape: CircleBorder(),
