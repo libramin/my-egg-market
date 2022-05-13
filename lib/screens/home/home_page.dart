@@ -123,11 +123,11 @@ class HomePage extends StatelessWidget {
                           mainAxisAlignment: MainAxisAlignment.spaceBetween,
                           children: [
                             _shimmerContainer(
-                                height: 24, width: 150, radius: 3.0),
+                                height: 23, width: 150, radius: 3.0),
                             _shimmerContainer(
-                                height: 24, width: 150, radius: 3.0),
+                                height: 23, width: 150, radius: 3.0),
                             _shimmerContainer(
-                                height: 24, width: 100, radius: 3.0),
+                                height: 23, width: 100, radius: 3.0),
                             Row(
                               mainAxisAlignment: MainAxisAlignment.end,
                               children: [
