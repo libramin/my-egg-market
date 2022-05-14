@@ -4,7 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:my_egg_market/router/locations.dart';
 import 'package:my_egg_market/screens/splash_screen.dart';
 import 'package:my_egg_market/screens/start_screen.dart';
-import 'package:my_egg_market/states/user_provider.dart';
+import 'package:my_egg_market/states/user_notifier.dart';
 import 'package:provider/provider.dart';
 
 final _routerDelegate = BeamerDelegate(
@@ -12,7 +12,7 @@ final _routerDelegate = BeamerDelegate(
       BeamGuard(
           pathBlueprints: ['/'],
         check: (context, location) {
-          return context.watch<UserProvider>().user!=null;
+          return context.watch<UserNotifier>().user!=null;
         },
         showPage: BeamPage(child: StartScreen()),
       )
@@ -64,9 +64,9 @@ class EggApp extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return ChangeNotifierProvider<UserProvider>(
+    return ChangeNotifierProvider<UserNotifier>(
       create: (BuildContext context) {
-        return UserProvider();
+        return UserNotifier();
       },
       child: MaterialApp.router(
           routeInformationParser: BeamerParser(),

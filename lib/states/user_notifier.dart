@@ -7,8 +7,8 @@ import 'package:shared_preferences/shared_preferences.dart';
 
 import '../constants/keys.dart';
 
-class UserProvider extends ChangeNotifier {
-  UserProvider() {
+class UserNotifier extends ChangeNotifier {
+  UserNotifier() {
     initUser();
   }
 
