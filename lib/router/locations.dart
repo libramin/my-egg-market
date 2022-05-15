@@ -30,6 +30,7 @@ class InputLocation extends BeamLocation{
   List<BeamPage> buildPages(BuildContext context,BeamState state) {
     return [
       ...HomeLocation().buildPages(context, state),
+
       if(state.pathBlueprintSegments.contains('input'))
       BeamPage(child: InputScreen(), key: ValueKey('input')),
 

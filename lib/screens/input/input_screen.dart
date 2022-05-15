@@ -19,13 +19,37 @@ class _InputScreenState extends State<InputScreen> {
       borderSide: BorderSide(color: Colors.transparent));
 
   @override
+  void dispose() {
+    _priceController.dispose();
+    super.dispose();
+  }
+
+  @override
   Widget build(BuildContext context) {
     return GestureDetector(
       onTap: (){
         FocusScope.of(context).unfocus();
       },
       child: Scaffold(
-          appBar: _appBar(context),
+          appBar: AppBar(
+            leading: IconButton(
+                onPressed: () {
+                  // Beamer.of(context).beamBack();
+                  context.beamBack();
+                },
+                icon: Icon(Icons.clear)),
+            title: Text('중고거래 글쓰기'),
+            actions: [
+              TextButton(
+                onPressed: () {},
+                child: Text(
+                  '완료',
+                  style: TextStyle(color: Colors.orange, fontSize: 18),
+                ),
+                style: TextButton.styleFrom(backgroundColor: Colors.white),
+              )
+            ],
+          ),
           body: ListView(
             children: [
               MultiImageSelect(),
@@ -125,24 +149,4 @@ class _InputScreenState extends State<InputScreen> {
     );
   }
 
-  AppBar _appBar(BuildContext context) {
-    return AppBar(
-      leading: IconButton(
-          onPressed: () {
-            context.beamBack();
-          },
-          icon: Icon(Icons.clear)),
-      title: Text('중고거래 글쓰기'),
-      actions: [
-        TextButton(
-          onPressed: () {},
-          child: Text(
-            '완료',
-            style: TextStyle(color: Colors.orange, fontSize: 18),
-          ),
-          style: TextButton.styleFrom(backgroundColor: Colors.white),
-        )
-      ],
-    );
-  }
 }
