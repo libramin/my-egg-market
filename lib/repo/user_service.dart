@@ -23,5 +23,4 @@ class UserService {
     UserModel userModel = UserModel.fromSnapshot(documentSnapshot);
     return userModel;
   }
-
 }

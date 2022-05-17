@@ -52,6 +52,10 @@ class ItemModel {
   ItemModel.fromSnapshot(DocumentSnapshot<Map<String, dynamic>> snapshot)
       : this.fromJson(snapshot.data()!, snapshot.id, snapshot.reference);
 
+  ItemModel.fromQuerySnapshot(
+      QueryDocumentSnapshot<Map<String, dynamic>> snapshot)
+      : this.fromJson(snapshot.data(),snapshot.id,snapshot.reference);
+
   Map<String, dynamic> toJson() {
     final map = <String, dynamic>{};
     map['userKey'] = userKey;
@@ -67,9 +71,8 @@ class ItemModel {
     return map;
   }
 
-  static String generateItemKey (String uid){
+  static String generateItemKey(String uid) {
     String timeMilli = DateTime.now().millisecondsSinceEpoch.toString();
     return '${uid}_$timeMilli';
   }
-
 }

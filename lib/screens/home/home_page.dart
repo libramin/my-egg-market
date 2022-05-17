@@ -1,5 +1,7 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:my_egg_market/data/item_model.dart';
+import 'package:my_egg_market/repo/item_service.dart';
 import 'package:shimmer/shimmer.dart';
 
 class HomePage extends StatelessWidget {
@@ -7,18 +9,18 @@ class HomePage extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return FutureBuilder(
-        future: Future.delayed(Duration(seconds: 2)),
+    return FutureBuilder<List<ItemModel>>(
+        future: ItemService().getItems(),
         builder: (context, snapshot) {
           return AnimatedSwitcher(
               duration: Duration(milliseconds: 500),
-              child: (snapshot.connectionState != ConnectionState.done)
-                  ? _ShimmerListView()
-                  : _ListView());
+              child: (snapshot.hasData && snapshot.data!.isNotEmpty)
+                  ? _ListView(snapshot.data!)
+                  : _ShimmerListView());
         });
   }
 
-  LayoutBuilder _ListView() {
+  LayoutBuilder _ListView(List<ItemModel> items) {
     return LayoutBuilder(
       builder: (context, constraints) {
         Size size = MediaQuery.of(context).size;
@@ -26,6 +28,7 @@ class HomePage extends StatelessWidget {
         return ListView.separated(
             padding: EdgeInsets.all(16),
             itemBuilder: (context, index) {
+              ItemModel item = items[index];
               return SizedBox(
                 height: imgSize,
                 child: Row(
@@ -33,7 +36,8 @@ class HomePage extends StatelessWidget {
                     ClipRRect(
                       borderRadius: BorderRadius.circular(8.0),
                       child: Image.network(
-                        'https://picsum.photos/100',
+                        item.imageDownUrl[0],
+                        fit: BoxFit.cover,
                       ),
                     ),
                     SizedBox(
@@ -45,7 +49,7 @@ class HomePage extends StatelessWidget {
                           crossAxisAlignment: CrossAxisAlignment.start,
                           mainAxisAlignment: MainAxisAlignment.spaceBetween,
                           children: [
-                            Text('아페쎄 베티백', style: TextStyle(fontSize: 16)),
+                            Text(item.title, style: TextStyle(fontSize: 16)),
                             Row(
                               children: [
                                 Text('강북구 수유동 ',
@@ -56,7 +60,7 @@ class HomePage extends StatelessWidget {
                                         fontSize: 13, color: Colors.grey)),
                               ],
                             ),
-                            Text('1000원',
+                            Text('${item.price.toString()}원',
                                 style: TextStyle(
                                     fontSize: 17, fontWeight: FontWeight.bold)),
                             Row(
@@ -94,7 +98,7 @@ class HomePage extends StatelessWidget {
                 thickness: 1,
               );
             },
-            itemCount: 10);
+            itemCount: items.length);
       },
     );
   }
