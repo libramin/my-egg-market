@@ -1,7 +1,11 @@
+import 'dart:typed_data';
+
 import 'package:beamer/beamer.dart';
+import 'package:firebase_storage/firebase_storage.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_multi_formatter/flutter_multi_formatter.dart';
 import 'package:my_egg_market/states/category_notifier.dart';
+import 'package:my_egg_market/states/select_image_notifier.dart';
 import 'package:provider/provider.dart';
 import 'multi_image_select.dart';
 
@@ -41,12 +45,19 @@ class _InputScreenState extends State<InputScreen> {
             title: Text('중고거래 글쓰기'),
             actions: [
               TextButton(
-                onPressed: () {},
+                onPressed: () async{
+                  List<Uint8List> images = context.read<SelectImageNotifier>().images;
+                  var metaData = SettableMetadata(contentType: 'image/jpeg');
+                  Reference ref = FirebaseStorage.instance.ref('images/testing/testings_image553.jpg');
+                  if(images.isNotEmpty){await ref.putData(images[0],metaData);}
+                  String link = await ref.getDownloadURL();
+                  print('$link');
+                },
                 child: Text(
                   '완료',
                   style: TextStyle(color: Colors.orange, fontSize: 18),
                 ),
-                style: TextButton.styleFrom(backgroundColor: Colors.white),
+                style: TextButton.styleFrom(backgroundColor: Colors.white,primary: Colors.orange),
               )
             ],
           ),
