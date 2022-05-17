@@ -1,5 +1,5 @@
 import 'package:dio/dio.dart';
-import 'package:my_egg_market/data/AddressModel.dart';
+import 'package:my_egg_market/data/addressModel.dart';
 import 'package:my_egg_market/data/nowAddressModel.dart';
 
 const VWORLD_KEY = '7CD43C88-9AF7-36AF-B0F8-E87EAE0A85F4';

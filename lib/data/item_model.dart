@@ -66,4 +66,10 @@ class ItemModel {
     map['createdDate'] = createdDate;
     return map;
   }
+
+  static String generateItemKey (String uid){
+    String timeMilli = DateTime.now().millisecondsSinceEpoch.toString();
+    return '${uid}_$timeMilli';
+  }
+
 }

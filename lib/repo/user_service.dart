@@ -1,12 +1,10 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:my_egg_market/data/user_model.dart';
-import 'keys.dart';
+import '../constants/keys.dart';
 
 class UserService {
   static final UserService _userService = UserService._internal();
-
   factory UserService() => _userService;
-
   UserService._internal();
 
   Future createNewUser(Map<String, dynamic> json, String userKey) async {

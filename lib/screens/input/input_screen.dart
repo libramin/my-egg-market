@@ -1,12 +1,16 @@
 import 'dart:typed_data';
 
 import 'package:beamer/beamer.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_storage/firebase_storage.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_multi_formatter/flutter_multi_formatter.dart';
+import 'package:my_egg_market/data/item_model.dart';
 import 'package:my_egg_market/repo/image_storage.dart';
+import 'package:my_egg_market/repo/item_service.dart';
 import 'package:my_egg_market/states/category_notifier.dart';
 import 'package:my_egg_market/states/select_image_notifier.dart';
+import 'package:my_egg_market/states/user_notifier.dart';
 import 'package:provider/provider.dart';
 import 'multi_image_select.dart';
 
@@ -19,66 +23,104 @@ class InputScreen extends StatefulWidget {
 
 class _InputScreenState extends State<InputScreen> {
   TextEditingController _priceController = TextEditingController();
+  TextEditingController _titleController = TextEditingController();
+  TextEditingController _detailController = TextEditingController();
+
   bool _suggestPrice = false;
-  var _border = UnderlineInputBorder(
-      borderSide: BorderSide(color: Colors.transparent));
+  bool _isCreatingItem = false;
+
+  var _border =
+      UnderlineInputBorder(borderSide: BorderSide(color: Colors.transparent));
 
   @override
   void dispose() {
     _priceController.dispose();
+    _titleController.dispose();
+    _detailController.dispose();
     super.dispose();
   }
 
-  bool _isCreatingItem = false;
+  void attemptCreateItem() async {
+    if(FirebaseAuth.instance.currentUser == null) return;
+    _isCreatingItem = true;
+    setState(() {});
+
+    final String userKey = FirebaseAuth.instance.currentUser!.uid;
+    final String itemKey = ItemModel.generateItemKey(FirebaseAuth.instance.currentUser!.uid);
+    final num? price = num.tryParse(_priceController.text.replaceAll(',', '').replaceAll('원', ''));
+
+    List<Uint8List> images = context.read<SelectImageNotifier>().images;
+
+    List<String> downloadUrls = await ImageStorage.uploadImages(images, itemKey);
+
+    UserNotifier userNotifier = context.read<UserNotifier>();
+    if(userNotifier.userModel == null) return;
+
+    ItemModel itemModel = ItemModel(
+      userKey: userKey,
+      itemKey: itemKey,
+      imageDownUrl: downloadUrls,
+      title: _titleController.text,
+      category: context.read<CategoryNotifier>().currentCategory,
+      price: price??0,
+      negotiable: _suggestPrice,
+      detail: _detailController.text,
+      address: userNotifier.userModel!.address,
+      geoFirePoint: userNotifier.userModel!.geoFirePoint,
+      createdDate: DateTime.now().toUtc(),
+    );
+
+    await ItemService().createNewItem(itemModel.toJson(), itemKey);
+
+    context.beamBack();
+  }
 
   @override
   Widget build(BuildContext context) {
     return LayoutBuilder(
-      builder: (context,constraints){
+      builder: (context, constraints) {
         Size _size = MediaQuery.of(context).size;
-        return  IgnorePointer(
+        return IgnorePointer(
           ignoring: _isCreatingItem,
           child: GestureDetector(
-            onTap: (){
+            onTap: () {
               FocusScope.of(context).unfocus();
             },
             child: Scaffold(
                 appBar: AppBar(
                   leading: IconButton(
                       onPressed: () {
-                        // Beamer.of(context).beamBack();
                         context.beamBack();
                       },
                       icon: Icon(Icons.clear)),
-                  title: Text('중고거래 글쓰기'),
+                  title: const Text('중고거래 글쓰기'),
                   actions: [
                     TextButton(
-                      onPressed: () async{
-                        _isCreatingItem = true;
-                        setState(() { });
-                        List<Uint8List> images = context.read<SelectImageNotifier>().images;
-                        List<String> downloadUrls = await ImageStorage.uploadImages(images);
-                        print(downloadUrls.toString());
-
-                        _isCreatingItem = false;
-                        setState(() { });
-
-                      },
+                      onPressed: attemptCreateItem,
                       child: Text(
                         '완료',
                         style: TextStyle(color: Colors.orange, fontSize: 18),
                       ),
-                      style: TextButton.styleFrom(backgroundColor: Colors.white,primary: Colors.orange),
+                      style: TextButton.styleFrom(
+                          backgroundColor: Colors.white,
+                          primary: Colors.orange),
                     )
                   ],
-                  bottom: PreferredSize(preferredSize: Size(_size.width,2),
-                    child: _isCreatingItem?LinearProgressIndicator(minHeight: 2,):Container(),),
+                  bottom: PreferredSize(
+                    preferredSize: Size(_size.width, 2),
+                    child: _isCreatingItem
+                        ? LinearProgressIndicator(
+                            minHeight: 2,
+                          )
+                        : Container(),
+                  ),
                 ),
                 body: ListView(
                   children: [
                     MultiImageSelect(),
                     _divider(),
                     TextFormField(
+                      controller: _titleController,
                       decoration: InputDecoration(
                           hintText: '글 제목',
                           hintStyle: TextStyle(color: Colors.grey),
@@ -91,11 +133,13 @@ class _InputScreenState extends State<InputScreen> {
                     ListTile(
                       contentPadding: EdgeInsets.symmetric(horizontal: 10),
                       dense: true,
-                      title: Text(context.watch<CategoryNotifier>().currentCategory,
-                        style: TextStyle(fontWeight: FontWeight.bold),),
+                      title: Text(
+                        context.watch<CategoryNotifier>().currentCategory,
+                        style: TextStyle(fontWeight: FontWeight.bold),
+                      ),
                       trailing: Icon(Icons.navigate_next),
-                      onTap: (){
-                        context.beamToNamed('/input/category_input');
+                      onTap: () {
+                        context.beamToNamed('/category_input');
                       },
                     ),
                     _divider(),
@@ -110,7 +154,7 @@ class _InputScreenState extends State<InputScreen> {
                                   mantissaLength: 0, trailingSymbol: '원')
                             ],
                             onChanged: (value) {
-                              if(_priceController.text =='0원'){
+                              if (_priceController.text == '0원') {
                                 _priceController.clear();
                               }
                             },
@@ -120,7 +164,8 @@ class _InputScreenState extends State<InputScreen> {
                                 border: _border,
                                 enabledBorder: _border,
                                 focusedBorder: _border,
-                                contentPadding: EdgeInsets.symmetric(horizontal: 10)),
+                                contentPadding:
+                                    EdgeInsets.symmetric(horizontal: 10)),
                           ),
                         ),
                         TextButton.icon(
@@ -138,7 +183,9 @@ class _InputScreenState extends State<InputScreen> {
                           label: Text(
                             '가격제안 받기',
                             style: TextStyle(
-                                color: _suggestPrice ? Colors.orange : Colors.grey),
+                                color: _suggestPrice
+                                    ? Colors.orange
+                                    : Colors.grey),
                           ),
                           style: TextButton.styleFrom(
                               backgroundColor: Colors.transparent,
@@ -148,6 +195,7 @@ class _InputScreenState extends State<InputScreen> {
                     ),
                     _divider(),
                     TextFormField(
+                      controller: _detailController,
                       maxLines: null,
                       keyboardType: TextInputType.multiline,
                       decoration: InputDecoration(
@@ -175,5 +223,4 @@ class _InputScreenState extends State<InputScreen> {
       indent: 10,
     );
   }
-
 }

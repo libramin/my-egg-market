@@ -5,7 +5,7 @@ import 'package:beamer/beamer.dart';
 import '../../states/category_notifier.dart';
 
 class CategoryInputScreen extends StatelessWidget {
-  const CategoryInputScreen({Key? key}) : super(key: key);
+  CategoryInputScreen({Key? key}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
@@ -19,6 +19,7 @@ class CategoryInputScreen extends StatelessWidget {
               onTap: () {
                 context.read<CategoryNotifier>().set(categories[index]);
                 Beamer.of(context).beamBack();
+                // context.beamBack();
               },
               contentPadding: EdgeInsets.symmetric(horizontal: 10),
               title: Text(
@@ -26,7 +27,7 @@ class CategoryInputScreen extends StatelessWidget {
                 style: TextStyle(
                     color: context.read<CategoryNotifier>().currentCategory ==
                             categories[index]
-                        ? Theme.of(context).primaryColor
+                        ? Colors.orange
                         : Colors.black87),
               ),
             );

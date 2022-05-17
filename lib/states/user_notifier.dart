@@ -1,7 +1,7 @@
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/widgets.dart';
 import 'package:geoflutterfire/geoflutterfire.dart';
-import 'package:my_egg_market/constants/user_service.dart';
+import 'package:my_egg_market/repo/user_service.dart';
 import 'package:my_egg_market/data/user_model.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
@@ -46,4 +46,5 @@ class UserNotifier extends ChangeNotifier {
   }
 
   User? get user => _user;
+  UserModel? get userModel => _userModel;
 }
