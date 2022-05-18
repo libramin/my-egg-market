@@ -2,7 +2,9 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:my_egg_market/data/item_model.dart';
 import 'package:my_egg_market/repo/item_service.dart';
+import 'package:my_egg_market/router/locations.dart';
 import 'package:shimmer/shimmer.dart';
+import 'package:beamer/beamer.dart';
 
 class HomePage extends StatelessWidget {
   const HomePage({Key? key}) : super(key: key);
@@ -29,66 +31,71 @@ class HomePage extends StatelessWidget {
             padding: EdgeInsets.all(16),
             itemBuilder: (context, index) {
               ItemModel item = items[index];
-              return SizedBox(
-                height: imgSize,
-                child: Row(
-                  children: [
-                    ClipRRect(
-                      borderRadius: BorderRadius.circular(8.0),
-                      child: Image.network(
-                        item.imageDownUrl[0],
-                        fit: BoxFit.cover,
-                      ),
-                    ),
-                    SizedBox(
-                      width: 10,
-                    ),
-                    Expanded(
-                      child: Container(
-                        child: Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                          children: [
-                            Text(item.title, style: TextStyle(fontSize: 16)),
-                            Row(
-                              children: [
-                                Text('강북구 수유동 ',
-                                    style: TextStyle(
-                                        fontSize: 13, color: Colors.grey)),
-                                Text('• 10분전',
-                                    style: TextStyle(
-                                        fontSize: 13, color: Colors.grey)),
-                              ],
-                            ),
-                            Text('${item.price.toString()}원',
-                                style: TextStyle(
-                                    fontSize: 17, fontWeight: FontWeight.bold)),
-                            Row(
-                              mainAxisAlignment: MainAxisAlignment.end,
-                              children: [
-                                Icon(
-                                  CupertinoIcons.chat_bubble_2,
-                                  color: Colors.grey,
-                                  size: 20,
-                                ),
-                                Text('12',
-                                    style: TextStyle(
-                                        fontSize: 13, color: Colors.grey)),
-                                Icon(
-                                  CupertinoIcons.heart,
-                                  color: Colors.grey,
-                                  size: 20,
-                                ),
-                                Text('4',
-                                    style: TextStyle(
-                                        fontSize: 13, color: Colors.grey)),
-                              ],
-                            )
-                          ],
+              return InkWell(
+                onTap: (){
+                  context.beamToNamed('/$LOCATION_ITEM/:${item.itemKey}');
+                },
+                child: SizedBox(
+                  height: imgSize,
+                  child: Row(
+                    children: [
+                      ClipRRect(
+                        borderRadius: BorderRadius.circular(8.0),
+                        child: Image.network(
+                          item.imageDownUrl[0],
+                          fit: BoxFit.cover,
                         ),
                       ),
-                    )
-                  ],
+                      SizedBox(
+                        width: 10,
+                      ),
+                      Expanded(
+                        child: Container(
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                            children: [
+                              Text(item.title, style: TextStyle(fontSize: 16)),
+                              Row(
+                                children: [
+                                  Text('강북구 수유동 ',
+                                      style: TextStyle(
+                                          fontSize: 13, color: Colors.grey)),
+                                  Text('• 10분전',
+                                      style: TextStyle(
+                                          fontSize: 13, color: Colors.grey)),
+                                ],
+                              ),
+                              Text('${item.price.toString()}원',
+                                  style: TextStyle(
+                                      fontSize: 17, fontWeight: FontWeight.bold)),
+                              Row(
+                                mainAxisAlignment: MainAxisAlignment.end,
+                                children: [
+                                  Icon(
+                                    CupertinoIcons.chat_bubble_2,
+                                    color: Colors.grey,
+                                    size: 20,
+                                  ),
+                                  Text('12',
+                                      style: TextStyle(
+                                          fontSize: 13, color: Colors.grey)),
+                                  Icon(
+                                    CupertinoIcons.heart,
+                                    color: Colors.grey,
+                                    size: 20,
+                                  ),
+                                  Text('4',
+                                      style: TextStyle(
+                                          fontSize: 13, color: Colors.grey)),
+                                ],
+                              )
+                            ],
+                          ),
+                        ),
+                      )
+                    ],
+                  ),
                 ),
               );
             },

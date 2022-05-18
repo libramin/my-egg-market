@@ -8,6 +8,8 @@ import 'package:my_egg_market/widget/action_button.dart';
 import 'package:my_egg_market/widget/expandable_fab.dart';
 import 'package:provider/provider.dart';
 
+import '../router/locations.dart';
+
 class HomeScreen extends StatefulWidget {
   const HomeScreen({Key? key}) : super(key: key);
 
@@ -86,7 +88,7 @@ class _HomeScreenState extends State<HomeScreen> {
         MaterialButton(
           shape: CircleBorder(),
             onPressed: (){
-            context.beamToNamed('/input');
+            context.beamToNamed(LOCATION_INPUT);
             },child: Icon(Icons.add),
         color: Colors.orange[300],),
         MaterialButton(
