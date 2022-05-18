@@ -22,7 +22,7 @@ class ItemService {
     DocumentReference<Map<String, dynamic>> reference =
     FirebaseFirestore.instance.collection(COL_ITEM).doc(itemKey);
     final DocumentSnapshot<Map<String, dynamic>> documentSnapshot = await reference.get();
-    ItemModel itemModel = ItemModel.fromSnapshot(documentSnapshot);
+      ItemModel itemModel = ItemModel.fromSnapshot(documentSnapshot);
     return itemModel;
   }
 

@@ -33,7 +33,7 @@ class HomePage extends StatelessWidget {
               ItemModel item = items[index];
               return InkWell(
                 onTap: (){
-                  context.beamToNamed('/$LOCATION_ITEM/:${item.itemKey}');
+                  context.beamToNamed('/$LOCATION_ITEM/${item.itemKey}');
                 },
                 child: SizedBox(
                   height: imgSize,
