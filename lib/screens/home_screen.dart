@@ -3,6 +3,7 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:my_egg_market/screens/home/home_page.dart';
+import 'package:my_egg_market/screens/home/map_page.dart';
 import 'package:my_egg_market/states/user_notifier.dart';
 import 'package:my_egg_market/widget/action_button.dart';
 import 'package:my_egg_market/widget/expandable_fab.dart';
@@ -41,11 +42,11 @@ class _HomeScreenState extends State<HomeScreen> {
         children: [
           HomePage(),
           Container(
-            color: Colors.accents[1],
-          ),
-          Container(
             color: Colors.accents[2],
           ),
+          (context.read<UserNotifier>().userModel == null)
+              ? Container()
+              : MapPage(context.read<UserNotifier>().userModel!),
           Container(
             color: Colors.accents[3],
           ),
@@ -87,18 +88,24 @@ class _HomeScreenState extends State<HomeScreen> {
       floatingActionButton: ExpandableFab(distance: 90, children: [
         MaterialButton(
           shape: CircleBorder(),
-            onPressed: (){
+          onPressed: () {
             context.beamToNamed(LOCATION_INPUT);
-            },child: Icon(Icons.add),
-        color: Colors.orange[300],),
+          },
+          child: Icon(Icons.add),
+          color: Colors.orange[300],
+        ),
         MaterialButton(
           shape: CircleBorder(),
-          onPressed: (){},child: Icon(Icons.zoom_out_map_rounded),
-          color: Colors.orange[300],),
+          onPressed: () {},
+          child: Icon(Icons.zoom_out_map_rounded),
+          color: Colors.orange[300],
+        ),
         MaterialButton(
           shape: CircleBorder(),
-          onPressed: (){},child: Icon(Icons.zoom_out_map_rounded),
-          color: Colors.orange[300],),
+          onPressed: () {},
+          child: Icon(Icons.zoom_out_map_rounded),
+          color: Colors.orange[300],
+        ),
       ]),
     );
   }

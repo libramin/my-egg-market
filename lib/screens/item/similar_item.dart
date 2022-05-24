@@ -10,7 +10,7 @@ class SimilarItem extends StatelessWidget {
   Widget build(BuildContext context) {
     return InkWell(
       onTap: (){
-        Navigator.push(context, MaterialPageRoute(builder: (_)=>ItemDetailScreen(_itemModel.itemKey)));
+        Navigator.push(context, MaterialPageRoute(builder: (context)=>ItemDetailScreen(_itemModel.itemKey)));
       },
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.stretch,
