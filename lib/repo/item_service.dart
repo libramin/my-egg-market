@@ -9,12 +9,18 @@ class ItemService {
 
   ItemService._internal();
 
-  Future createNewItem(Map<String, dynamic> json, String itemKey) async {
-    DocumentReference<Map<String, dynamic>> reference =
+  Future createNewItem(ItemModel itemModel, String itemKey,String userKey) async {
+    DocumentReference<Map<String, dynamic>> itemDocReference =
         FirebaseFirestore.instance.collection(COL_ITEM).doc(itemKey);
-    final DocumentSnapshot documentSnapshot = await reference.get();
+    DocumentReference<Map<String, dynamic>> userItemDocReference =
+    FirebaseFirestore.instance.collection(COL_USER).doc(userKey).collection(COL_USER_ITEMS).doc(itemKey);
+    final DocumentSnapshot documentSnapshot = await itemDocReference.get();
     if(!documentSnapshot.exists){
-      await reference.set(json);
+      // await reference.set(json);
+      await FirebaseFirestore.instance.runTransaction((transaction) async{
+        transaction.set(itemDocReference, itemModel.toJson());
+        transaction.set(userItemDocReference, itemModel.toMinJson());
+      });
     }
   }
 
@@ -38,4 +44,20 @@ class ItemService {
     }
     return items;
   }
+
+  Future<List<ItemModel>> getUserItems (String userKey, {String? itemKey})async{
+    CollectionReference<Map<String, dynamic>> collectionReference = FirebaseFirestore.instance.collection(COL_USER).doc(userKey).collection(COL_USER_ITEMS);
+    QuerySnapshot<Map<String, dynamic>> querySnapshot = await collectionReference.get();
+
+    List<ItemModel> items =[];
+
+    for(int i=0; i<querySnapshot.size; i++){
+      ItemModel itemModel = ItemModel.fromQuerySnapshot(querySnapshot.docs[i]);
+      if(itemKey != null && itemKey != itemModel.itemKey) {
+        items.add(itemModel);
+      }
+    }
+    return items;
+  }
+
 }

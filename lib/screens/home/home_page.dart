@@ -44,6 +44,8 @@ class HomePage extends StatelessWidget {
                         child: Image.network(
                           item.imageDownUrl[0],
                           fit: BoxFit.cover,
+                          width: imgSize,
+                          height: imgSize,
                         ),
                       ),
                       SizedBox(
