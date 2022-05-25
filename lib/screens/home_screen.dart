@@ -5,7 +5,6 @@ import 'package:flutter/material.dart';
 import 'package:my_egg_market/screens/home/home_page.dart';
 import 'package:my_egg_market/screens/home/map_page.dart';
 import 'package:my_egg_market/states/user_notifier.dart';
-import 'package:my_egg_market/widget/action_button.dart';
 import 'package:my_egg_market/widget/expandable_fab.dart';
 import 'package:provider/provider.dart';
 
@@ -33,6 +32,7 @@ class _HomeScreenState extends State<HomeScreen> {
           IconButton(
               onPressed: () {
                 FirebaseAuth.instance.signOut();
+                context.beamToNamed('/');
               },
               icon: Icon(CupertinoIcons.bell)),
         ],
