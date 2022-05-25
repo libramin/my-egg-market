@@ -1,6 +1,7 @@
 import 'package:beamer/beamer.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
+import 'package:my_egg_market/screens/chat/chatroom_screen.dart';
 import 'package:my_egg_market/screens/home_screen.dart';
 import 'package:my_egg_market/screens/input/input_screen.dart';
 import 'package:my_egg_market/screens/input/category_input_screen.dart';
@@ -14,6 +15,7 @@ const LOCATION_INPUT = 'input';
 const LOCATION_CATEGORY_INPUT = 'category_input';
 const LOCATION_ITEM = 'item';
 const LOCATION_ITEM_ID = 'item_id';
+const LOCATION_CHATROOM_ID = 'chatroom_id';
 
 
 
@@ -64,12 +66,15 @@ class ItemLocation extends BeamLocation{
     return[
     ...HomeLocation().buildPages(context, state),
       if(state.pathParameters.containsKey(LOCATION_ITEM_ID))
-        BeamPage(child: ItemDetailScreen(state.pathParameters[LOCATION_ITEM_ID] ?? ''),key: ValueKey(LOCATION_ITEM_ID))
+        BeamPage(child: ItemDetailScreen(state.pathParameters[LOCATION_ITEM_ID] ?? ''),key: ValueKey(LOCATION_ITEM_ID)),
+
+      if(state.pathParameters.containsKey(LOCATION_CHATROOM_ID))
+        BeamPage(child: ChatRoomScreen(chatroomKey:state.pathParameters[LOCATION_CHATROOM_ID] ?? ''),key: ValueKey(LOCATION_CHATROOM_ID))
     ];
   }
 
   @override
   // TODO: implement pathBlueprints
-  List get pathBlueprints => ['/$LOCATION_ITEM/:$LOCATION_ITEM_ID'];
+  List get pathBlueprints => ['/$LOCATION_ITEM/:$LOCATION_ITEM_ID/:$LOCATION_CHATROOM_ID'];
   
 }

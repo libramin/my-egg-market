@@ -1,13 +1,18 @@
+import 'package:beamer/beamer.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:my_egg_market/data/chatroom_model.dart';
 import 'package:my_egg_market/data/item_model.dart';
 import 'package:my_egg_market/data/user_model.dart';
+import 'package:my_egg_market/repo/chat_service.dart';
 import 'package:my_egg_market/repo/item_service.dart';
 import 'package:my_egg_market/screens/item/similar_item.dart';
 import 'package:my_egg_market/screens/item/time_calculation.dart';
 import 'package:my_egg_market/states/user_notifier.dart';
 import 'package:smooth_page_indicator/smooth_page_indicator.dart';
 import 'package:provider/provider.dart';
+
+import '../../router/locations.dart';
 
 class ItemDetailScreen extends StatefulWidget {
   final String itemKey;
@@ -32,6 +37,30 @@ class _ItemDetailScreenState extends State<ItemDetailScreen> {
   Widget _gap = SizedBox(
     height: 20,
   );
+
+  void _goToChatroom(ItemModel itemModel, UserModel userModel) async{
+
+    String chatroomKey = ChatroomModel.generateChatRoomKey(userModel.userKey, itemModel.itemKey);
+
+    ChatroomModel _chatroomModel = ChatroomModel(
+        itemImage: itemModel.imageDownUrl[0],
+        itemTitle: itemModel.title,
+        itemKey: itemModel.itemKey,
+        itemAddress: itemModel.address,
+        itemPrice: itemModel.price,
+        sellerKey: itemModel.userKey,
+        buyerKey: userModel.userKey,
+        sellerImage: 'sellerImage',
+        buyerImage: 'buyerImage',
+        geoFirePoint: itemModel.geoFirePoint,
+        // lastMsg: lastMsg,
+        lastMsgTime: DateTime.now(),
+        // lastMsgUserKey: lastMsgUserKey,
+        chatroomKey: chatroomKey);
+    await ChatService().createNewChatRoom(_chatroomModel);
+
+    context.beamToNamed('/$LOCATION_ITEM/${widget.itemKey}/$chatroomKey');
+  }
 
   @override
   void initState() {
@@ -170,39 +199,43 @@ class _ItemDetailScreenState extends State<ItemDetailScreen> {
                               _divider,
                             ])),
                           ),
-                          SliverToBoxAdapter(child: Padding(
-                            padding: const EdgeInsets.symmetric(horizontal: 10),
-                            child: Row(
-                              mainAxisAlignment:
-                              MainAxisAlignment.spaceBetween,
-                              children: [
-                                Text(
-                                    '${userModel.phoneNumber.substring(9)}님의 판매 상품',
-                                    style: TextStyle(
-                                        fontWeight: FontWeight.bold,
-                                        fontSize: 18)),
-                                SizedBox(
-                                  width: _size!.width / 4,
-                                  child: MaterialButton(
-                                      onPressed: () {},
-                                      child: Align(
-                                        alignment: Alignment.centerRight,
-                                        child: Text(
-                                          '더보기',
-                                          style: TextStyle(
-                                              fontWeight: FontWeight.bold,
-                                              fontSize: 18,
-                                              color: Colors.grey),
-                                        ),
-                                      )),
-                                )
-                              ],
+                          SliverToBoxAdapter(
+                            child: Padding(
+                              padding:
+                                  const EdgeInsets.symmetric(horizontal: 10),
+                              child: Row(
+                                mainAxisAlignment:
+                                    MainAxisAlignment.spaceBetween,
+                                children: [
+                                  Text(
+                                      '${userModel.phoneNumber.substring(9)}님의 판매 상품',
+                                      style: TextStyle(
+                                          fontWeight: FontWeight.bold,
+                                          fontSize: 18)),
+                                  SizedBox(
+                                    width: _size!.width / 4,
+                                    child: MaterialButton(
+                                        onPressed: () {},
+                                        child: Align(
+                                          alignment: Alignment.centerRight,
+                                          child: Text(
+                                            '더보기',
+                                            style: TextStyle(
+                                                fontWeight: FontWeight.bold,
+                                                fontSize: 18,
+                                                color: Colors.grey),
+                                          ),
+                                        )),
+                                  )
+                                ],
+                              ),
                             ),
-                          ),),
+                          ),
                           SliverToBoxAdapter(
                             child: FutureBuilder<List<ItemModel>>(
-                                future: ItemService()
-                                    .getUserItems(userModel.userKey,itemKey: widget.itemKey),
+                                future: ItemService().getUserItems(
+                                    userModel.userKey,
+                                    itemKey: widget.itemKey),
                                 builder: (context, snapshot) {
                                   if (snapshot.hasData) {
                                     return Padding(
@@ -216,7 +249,9 @@ class _ItemDetailScreenState extends State<ItemDetailScreen> {
                                         crossAxisSpacing: 10,
                                         childAspectRatio: 6 / 7,
                                         children: List.generate(
-                                            snapshot.data!.length, (index) => SimilarItem(snapshot.data![index])),
+                                            snapshot.data!.length,
+                                            (index) => SimilarItem(
+                                                snapshot.data![index])),
                                       ),
                                     );
                                   }
@@ -276,8 +311,10 @@ class _ItemDetailScreenState extends State<ItemDetailScreen> {
                                   child: Container(),
                                 ),
                                 TextButton(
-                                  onPressed: () {},
-                                  child: Text('채팅 목록 보기'),
+                                  onPressed: () {
+                                    _goToChatroom(itemModel,userModel);
+                                  },
+                                  child: Text('채팅하기'),
                                 )
                               ],
                             ),
