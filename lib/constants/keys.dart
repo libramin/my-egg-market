@@ -4,6 +4,9 @@ const SHARED_LON = 'longitude';
 const COL_USER = 'Users';
 const COL_ITEM = 'items';
 const COL_USER_ITEMS = 'user_items';
+const COL_CHATROOMS = 'chat_rooms';
+const COL_CHATS = 'chats';
+
 
 const DOC_USERKEY = 'userKey';
 const DOC_PHONENUMBER = 'phoneNumber';
