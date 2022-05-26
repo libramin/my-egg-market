@@ -4,11 +4,11 @@ import 'package:my_egg_market/data/chatroom_model.dart';
 import 'package:my_egg_market/repo/chat_service.dart';
 
 class ChatNotifier extends ChangeNotifier {
-  late ChatroomModel _chatroomModel;
+  ChatroomModel? _chatroomModel;
   List<ChatModel> _chatList = [];
-  late String _chatRoomKey;
+  final String _chatRoomKey;
 
-  ChatroomModel get chatroomModel => _chatroomModel;
+  ChatroomModel? get chatroomModel => _chatroomModel;
 
   List<ChatModel> get chatList => _chatList;
 

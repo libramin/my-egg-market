@@ -1,11 +1,13 @@
 import 'package:flutter/material.dart';
 import 'package:my_egg_market/data/chat_model.dart';
+import 'package:my_egg_market/data/chatroom_model.dart';
 import 'package:my_egg_market/data/user_model.dart';
 import 'package:my_egg_market/repo/chat_service.dart';
 import 'package:my_egg_market/screens/chat/chatBubble.dart';
 import 'package:my_egg_market/states/chat_notifier.dart';
 import 'package:my_egg_market/states/user_notifier.dart';
 import 'package:provider/provider.dart';
+import 'package:shimmer/shimmer.dart';
 
 class ChatRoomScreen extends StatefulWidget {
   final String chatroomKey;
@@ -55,7 +57,7 @@ class _ChatRoomScreenState extends State<ChatRoomScreen> {
             body: SafeArea(
               child: Column(
                 children: [
-                  _buildItemInfo(),
+                  _buildItemInfo(context),
                   Expanded(
                       child: Container(
                         color: Colors.white,
@@ -87,7 +89,8 @@ class _ChatRoomScreenState extends State<ChatRoomScreen> {
     );
   }
 
-  MaterialBanner _buildItemInfo() {
+  MaterialBanner _buildItemInfo(BuildContext context) {
+    ChatroomModel? chatroomModel = context.read<ChatNotifier>().chatroomModel;
     return MaterialBanner(
                   padding: EdgeInsets.zero,
                   leadingPadding: EdgeInsets.zero,
@@ -96,7 +99,9 @@ class _ChatRoomScreenState extends State<ChatRoomScreen> {
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
                       ListTile(
-                        leading: Image.network('https://picsum.photos/100'),
+                        leading: chatroomModel==null?Shimmer.fromColors(baseColor: Colors.grey,
+                        highlightColor: Colors.grey,
+                        child: Container(color: Colors.white,)):Image.network('https://picsum.photos/100'),
                         title: Row(
                           children: [
                             Text(
@@ -106,11 +111,11 @@ class _ChatRoomScreenState extends State<ChatRoomScreen> {
                             SizedBox(
                               width: 10,
                             ),
-                            Text('스파오 맨투맨')
+                            Text(chatroomModel==null?'':chatroomModel.itemTitle)
                           ],
                         ),
                         subtitle: Text(
-                          '30,000원',
+                          chatroomModel==null?'': '${chatroomModel.itemPrice.toString()}원',
                           style: TextStyle(fontWeight: FontWeight.bold),
                         ),
                       ),

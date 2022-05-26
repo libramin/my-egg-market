@@ -9,6 +9,7 @@ import 'package:my_egg_market/widget/expandable_fab.dart';
 import 'package:provider/provider.dart';
 
 import '../router/locations.dart';
+import 'chat/chat_list_page.dart';
 
 class HomeScreen extends StatefulWidget {
   const HomeScreen({Key? key}) : super(key: key);
@@ -47,9 +48,7 @@ class _HomeScreenState extends State<HomeScreen> {
           (context.read<UserNotifier>().userModel == null)
               ? Container()
               : MapPage(context.read<UserNotifier>().userModel!),
-          Container(
-            color: Colors.accents[3],
-          ),
+          ChatListPage(),
           Container(
             color: Colors.accents[4],
           ),

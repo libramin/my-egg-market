@@ -79,7 +79,6 @@ class ChatService {
     return chatLists;
   }
 
-
   Future<List<ChatModel>> getLatestChats(
       String chatroomKey, DocumentReference currentLatestChatRef) async {
     QuerySnapshot<Map<String, dynamic>> snapshot = await FirebaseFirestore
@@ -119,5 +118,37 @@ class ChatService {
       chatLists.add(chatModel);
     });
     return chatLists;
+  }
+
+  Future<List<ChatroomModel>> getMyChatList(String myUserKey) async {
+
+    List<ChatroomModel> chatrooms =[];
+
+    //todo i'm as buyer
+    QuerySnapshot<Map<String, dynamic>> buying = await FirebaseFirestore
+        .instance
+        .collection(COL_CHATROOMS)
+        .where(DOC_BUYERKEY, isEqualTo: myUserKey)
+        .get();
+
+    //todo i'm as seller
+    QuerySnapshot<Map<String, dynamic>> selling = await FirebaseFirestore
+        .instance
+        .collection(COL_CHATROOMS)
+        .where(DOC_SELLERKEY, isEqualTo: myUserKey)
+        .get();
+
+    buying.docs.forEach((DocSnapshot) {
+      chatrooms.add(ChatroomModel.fromQuerySnapshot(DocSnapshot));
+    });
+
+    selling.docs.forEach((DocSnapshot) {
+      chatrooms.add(ChatroomModel.fromQuerySnapshot(DocSnapshot));
+    });
+
+    chatrooms.sort((a, b) => (a.lastMsgTime).compareTo(b.lastMsgTime));
+
+    return chatrooms;
+
   }
 }
