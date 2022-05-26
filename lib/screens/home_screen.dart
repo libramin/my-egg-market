@@ -30,7 +30,9 @@ class _HomeScreenState extends State<HomeScreen> {
         title: Text('장위동'),
         centerTitle: false,
         actions: [
-          IconButton(onPressed: () {}, icon: Icon(CupertinoIcons.search)),
+          IconButton(onPressed: () {
+            context.beamToNamed('/$LOCATION_SEARCH');
+          }, icon: Icon(CupertinoIcons.search)),
           IconButton(onPressed: () {}, icon: Icon(Icons.menu)),
           IconButton(
               onPressed: () {

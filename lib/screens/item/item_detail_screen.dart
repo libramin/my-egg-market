@@ -141,7 +141,7 @@ class _ItemDetailScreenState extends State<ItemDetailScreen> {
                             padding: EdgeInsets.all(10),
                             sliver: SliverList(
                                 delegate: SliverChildListDelegate([
-                              _userSection(userModel),
+                              _userSection(userModel,itemModel),
                               _divider,
                               Text(
                                 itemModel.title,
@@ -234,7 +234,8 @@ class _ItemDetailScreenState extends State<ItemDetailScreen> {
                           SliverToBoxAdapter(
                             child: FutureBuilder<List<ItemModel>>(
                                 future: ItemService().getUserItems(
-                                    userModel.userKey,
+                                    // userModel.userKey,
+                                  itemModel.userKey,
                                     itemKey: widget.itemKey),
                                 builder: (context, snapshot) {
                                   if (snapshot.hasData) {
@@ -334,7 +335,7 @@ class _ItemDetailScreenState extends State<ItemDetailScreen> {
         });
   }
 
-  Widget _userSection(UserModel userModel) {
+  Widget _userSection(UserModel userModel,ItemModel itemModel) {
     return Row(
       children: [
         Icon(
@@ -356,7 +357,7 @@ class _ItemDetailScreenState extends State<ItemDetailScreen> {
                 style: TextStyle(fontWeight: FontWeight.bold, fontSize: 18),
               ),
               Text(
-                userModel.address,
+                itemModel.address,
                 style: TextStyle(fontSize: 15),
               )
             ],
