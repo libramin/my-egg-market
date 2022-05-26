@@ -17,8 +17,6 @@ const LOCATION_ITEM = 'item';
 const LOCATION_ITEM_ID = 'item_id';
 const LOCATION_CHATROOM_ID = 'chatroom_id';
 
-
-
 class HomeLocation extends BeamLocation {
   @override
   List<BeamPage> buildPages(BuildContext context, BeamState state) {
@@ -46,7 +44,6 @@ class InputLocation extends BeamLocation {
               ChangeNotifierProvider(create: (context) => SelectImageNotifier())
             ], child: InputScreen()),
             key: ValueKey(LOCATION_INPUT)),
-
       if (state.pathBlueprintSegments.contains(LOCATION_CATEGORY_INPUT))
         BeamPage(
             child: ChangeNotifierProvider.value(
@@ -59,22 +56,27 @@ class InputLocation extends BeamLocation {
   List get pathBlueprints => ['/$LOCATION_INPUT', '/$LOCATION_CATEGORY_INPUT'];
 }
 
-class ItemLocation extends BeamLocation{
+class ItemLocation extends BeamLocation {
   @override
   List<BeamPage> buildPages(BuildContext context, BeamState state) {
     // TODO: implement buildPages
-    return[
-    ...HomeLocation().buildPages(context, state),
-      if(state.pathParameters.containsKey(LOCATION_ITEM_ID))
-        BeamPage(child: ItemDetailScreen(state.pathParameters[LOCATION_ITEM_ID] ?? ''),key: ValueKey(LOCATION_ITEM_ID)),
-
-      if(state.pathParameters.containsKey(LOCATION_CHATROOM_ID))
-        BeamPage(child: ChatRoomScreen(chatroomKey:state.pathParameters[LOCATION_CHATROOM_ID] ?? ''),key: ValueKey(LOCATION_CHATROOM_ID))
+    return [
+      ...HomeLocation().buildPages(context, state),
+      if (state.pathParameters.containsKey(LOCATION_ITEM_ID))
+        BeamPage(
+            child:
+                ItemDetailScreen(state.pathParameters[LOCATION_ITEM_ID] ?? ''),
+            key: ValueKey(LOCATION_ITEM_ID)),
+      if (state.pathParameters.containsKey(LOCATION_CHATROOM_ID))
+        BeamPage(
+            child: ChatRoomScreen(
+                chatroomKey: state.pathParameters[LOCATION_CHATROOM_ID] ?? ''),
+            key: ValueKey(LOCATION_CHATROOM_ID))
     ];
   }
 
   @override
   // TODO: implement pathBlueprints
-  List get pathBlueprints => ['/$LOCATION_ITEM/:$LOCATION_ITEM_ID/:$LOCATION_CHATROOM_ID'];
-  
+  List get pathBlueprints =>
+      ['/$LOCATION_ITEM/:$LOCATION_ITEM_ID/:$LOCATION_CHATROOM_ID'];
 }

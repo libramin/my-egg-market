@@ -45,8 +45,6 @@ class ChatService {
     });
   }
 
-//todo: get chatroom detail
-
   Stream<ChatroomModel> connectChatroom(String chatroomKey) {
     return FirebaseFirestore.instance
         .collection(COL_CHATROOMS)
@@ -90,7 +88,7 @@ class ChatService {
         .doc(chatroomKey)
         .collection(COL_CHATS)
         .orderBy(DOC_CREATEDDATE, descending: true)
-        .endAtDocument(await currentLatestChatRef.get())
+        .endBeforeDocument(await currentLatestChatRef.get())
         .get();
 
     List<ChatModel> chatLists = [];

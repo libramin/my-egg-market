@@ -8,16 +8,17 @@ class ChatModel {
       required this.msg,
       required this.createdDate,
       required this.userKey,
-      required this.chatKey,
       this.reference,});
 
   ChatModel.fromJson(Map<String, dynamic> json, this.chatKey, this.reference) {
     msg = json[DOC_MSG];
-    createdDate = json[DOC_CREATEDDATE];
+    createdDate = json[DOC_CREATEDDATE]== null
+        ? DateTime.now()
+        : (json[DOC_CREATEDDATE] as Timestamp).toDate();
     userKey = json[DOC_USERKEY];
   }
   late String msg;
-  late String createdDate;
+  late DateTime createdDate;
   late String userKey;
   late String chatKey;
   DocumentReference? reference;
