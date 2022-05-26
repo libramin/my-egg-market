@@ -6,109 +6,133 @@ import 'package:my_egg_market/router/locations.dart';
 import 'package:shimmer/shimmer.dart';
 import 'package:beamer/beamer.dart';
 
-class HomePage extends StatelessWidget {
+class HomePage extends StatefulWidget {
   const HomePage({Key? key}) : super(key: key);
 
   @override
-  Widget build(BuildContext context) {
-    return FutureBuilder<List<ItemModel>>(
-        future: ItemService().getItems(),
-        builder: (context, snapshot) {
-          return AnimatedSwitcher(
-              duration: Duration(milliseconds: 500),
-              child: (snapshot.hasData && snapshot.data!.isNotEmpty)
-                  ? _ListView(snapshot.data!)
-                  : _ShimmerListView());
-        });
+  State<HomePage> createState() => _HomePageState();
+}
+
+class _HomePageState extends State<HomePage> {
+  List<ItemModel> _itmes = [];
+  bool init = false;
+
+  @override
+  void initState() {
+    if(!init) {
+      _onRefresh();
+      init=true;
+    }
+    super.initState();
   }
 
-  LayoutBuilder _ListView(List<ItemModel> items) {
-    return LayoutBuilder(
-      builder: (context, constraints) {
-        Size size = MediaQuery.of(context).size;
-        final imgSize = size.width / 4;
-        return ListView.separated(
-            padding: EdgeInsets.all(16),
-            itemBuilder: (context, index) {
-              ItemModel item = items[index];
-              return InkWell(
-                onTap: (){
-                  context.beamToNamed('/$LOCATION_ITEM/${item.itemKey}');
-                },
-                child: SizedBox(
-                  height: imgSize,
-                  child: Row(
-                    children: [
-                      ClipRRect(
-                        borderRadius: BorderRadius.circular(8.0),
-                        child: Image.network(
-                          item.imageDownUrl[0],
-                          fit: BoxFit.cover,
-                          width: imgSize,
-                          height: imgSize,
-                        ),
-                      ),
-                      SizedBox(
-                        width: 10,
-                      ),
-                      Expanded(
-                        child: Container(
-                          child: Column(
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                            children: [
-                              Text(item.title, style: TextStyle(fontSize: 16)),
-                              Row(
-                                children: [
-                                  Text('강북구 수유동 ',
-                                      style: TextStyle(
-                                          fontSize: 13, color: Colors.grey)),
-                                  Text('• 10분전',
-                                      style: TextStyle(
-                                          fontSize: 13, color: Colors.grey)),
-                                ],
-                              ),
-                              Text('${item.price.toString()}원',
-                                  style: TextStyle(
-                                      fontSize: 17, fontWeight: FontWeight.bold)),
-                              Row(
-                                mainAxisAlignment: MainAxisAlignment.end,
-                                children: [
-                                  Icon(
-                                    CupertinoIcons.chat_bubble_2,
-                                    color: Colors.grey,
-                                    size: 20,
-                                  ),
-                                  Text('12',
-                                      style: TextStyle(
-                                          fontSize: 13, color: Colors.grey)),
-                                  Icon(
-                                    CupertinoIcons.heart,
-                                    color: Colors.grey,
-                                    size: 20,
-                                  ),
-                                  Text('4',
-                                      style: TextStyle(
-                                          fontSize: 13, color: Colors.grey)),
-                                ],
-                              )
-                            ],
+  @override
+  Widget build(BuildContext context) {
+    return AnimatedSwitcher(
+        duration: Duration(milliseconds: 500),
+        child: (_itmes.isNotEmpty)
+            ? _ListView()
+            : _ShimmerListView());
+  }
+
+  Future _onRefresh ()async{
+    _itmes.clear();
+    _itmes.addAll(await ItemService().getItems());
+    setState(() {
+
+    });
+  }
+
+  Widget _ListView() {
+    return RefreshIndicator(
+      onRefresh: _onRefresh,
+      child: LayoutBuilder(
+        builder: (context, constraints) {
+          Size size = MediaQuery.of(context).size;
+          final imgSize = size.width / 4;
+          return ListView.separated(
+              padding: EdgeInsets.all(16),
+              itemBuilder: (context, index) {
+                ItemModel item = _itmes[index];
+                return InkWell(
+                  onTap: (){
+                    context.beamToNamed('/$LOCATION_ITEM/${item.itemKey}');
+                  },
+                  child: SizedBox(
+                    height: imgSize,
+                    child: Row(
+                      children: [
+                        ClipRRect(
+                          borderRadius: BorderRadius.circular(8.0),
+                          child: Image.network(
+                            item.imageDownUrl[0],
+                            fit: BoxFit.cover,
+                            width: imgSize,
+                            height: imgSize,
                           ),
                         ),
-                      )
-                    ],
+                        SizedBox(
+                          width: 10,
+                        ),
+                        Expanded(
+                          child: Container(
+                            child: Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                              children: [
+                                Text(item.title, style: TextStyle(fontSize: 16)),
+                                Row(
+                                  children: [
+                                    Text('강북구 수유동 ',
+                                        style: TextStyle(
+                                            fontSize: 13, color: Colors.grey)),
+                                    Text('• 10분전',
+                                        style: TextStyle(
+                                            fontSize: 13, color: Colors.grey)),
+                                  ],
+                                ),
+                                Text('${item.price.toString()}원',
+                                    style: TextStyle(
+                                        fontSize: 17, fontWeight: FontWeight.bold)),
+                                Row(
+                                  mainAxisAlignment: MainAxisAlignment.end,
+                                  children: [
+                                    Icon(
+                                      CupertinoIcons.chat_bubble_2,
+                                      color: Colors.grey,
+                                      size: 20,
+                                    ),
+                                    Text('12',
+                                        style: TextStyle(
+                                            fontSize: 13, color: Colors.grey)),
+                                    Icon(
+                                      CupertinoIcons.heart,
+                                      color: Colors.grey,
+                                      size: 20,
+                                    ),
+                                    Text('4',
+                                        style: TextStyle(
+                                            fontSize: 13, color: Colors.grey)),
+                                  ],
+                                )
+                              ],
+                            ),
+                          ),
+                        )
+                      ],
+                    ),
                   ),
-                ),
-              );
-            },
-            separatorBuilder: (context, index) {
-              return Divider(
-                height: 32,
-                thickness: 1,
-              );
-            },
-            itemCount: items.length);
-      },
+                );
+              },
+              separatorBuilder: (context, index) {
+                return Divider(
+                  height: 32,
+                  thickness: 1,
+                );
+              },
+              itemCount: _itmes.length);
+        },
+      ),
     );
   }
 
