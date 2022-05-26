@@ -6,11 +6,11 @@ import 'package:my_egg_market/states/user_notifier.dart';
 import 'package:provider/provider.dart';
 
 class ChatListPage extends StatelessWidget {
-  const ChatListPage({Key? key}) : super(key: key);
+  final String userKey;
+  const ChatListPage({Key? key, required this.userKey}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
-    String userKey = context.read<UserNotifier>().userModel!.userKey;
     return FutureBuilder<List<ChatroomModel>>(
         future: ChatService().getMyChatList(userKey),
         builder: (context, snapshot) {

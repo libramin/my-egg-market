@@ -40,11 +40,11 @@ class ItemService {
     return itemModel;
   }
 
-  Future<List<ItemModel>> getItems() async {
+  Future<List<ItemModel>> getItems(String userKey) async {
     CollectionReference<Map<String, dynamic>> collectionReference =
         FirebaseFirestore.instance.collection(COL_ITEM);
     QuerySnapshot<Map<String, dynamic>> querySnapshot =
-        await collectionReference.get();
+        await collectionReference.where(DOC_USERKEY, isNotEqualTo: userKey).get();
 
     List<ItemModel> items = [];
 

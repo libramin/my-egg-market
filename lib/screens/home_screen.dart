@@ -2,6 +2,7 @@ import 'package:beamer/beamer.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:my_egg_market/data/user_model.dart';
 import 'package:my_egg_market/screens/home/home_page.dart';
 import 'package:my_egg_market/screens/home/map_page.dart';
 import 'package:my_egg_market/states/user_notifier.dart';
@@ -23,6 +24,7 @@ class _HomeScreenState extends State<HomeScreen> {
 
   @override
   Widget build(BuildContext context) {
+    UserModel? userModel = context.read<UserNotifier>().userModel;
     return Scaffold(
       appBar: AppBar(
         title: Text('장위동'),
@@ -38,17 +40,15 @@ class _HomeScreenState extends State<HomeScreen> {
               icon: Icon(CupertinoIcons.bell)),
         ],
       ),
-      body: IndexedStack(
+      body: userModel==null?Container():IndexedStack(
         index: _selectedIndex,
         children: [
-          HomePage(),
+          HomePage(userKey: userModel.userKey,),
           Container(
             color: Colors.accents[2],
           ),
-          (context.read<UserNotifier>().userModel == null)
-              ? Container()
-              : MapPage(context.read<UserNotifier>().userModel!),
-          ChatListPage(),
+          MapPage(userModel),
+          ChatListPage(userKey: userModel.userKey,),
           Container(
             color: Colors.accents[4],
           ),

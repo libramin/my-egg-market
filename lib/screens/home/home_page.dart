@@ -7,7 +7,8 @@ import 'package:shimmer/shimmer.dart';
 import 'package:beamer/beamer.dart';
 
 class HomePage extends StatefulWidget {
-  const HomePage({Key? key}) : super(key: key);
+  final String userKey;
+  const HomePage({Key? key, required this.userKey}) : super(key: key);
 
   @override
   State<HomePage> createState() => _HomePageState();
@@ -37,7 +38,7 @@ class _HomePageState extends State<HomePage> {
 
   Future _onRefresh ()async{
     _itmes.clear();
-    _itmes.addAll(await ItemService().getItems());
+    _itmes.addAll(await ItemService().getItems(widget.userKey));
     setState(() {
 
     });
