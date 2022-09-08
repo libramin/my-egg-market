@@ -16,7 +16,7 @@ class ChatNotifier extends ChangeNotifier {
 
   ChatNotifier(this._chatRoomKey) {
     ChatService().connectChatroom(_chatRoomKey).listen((chatRoomModel) {
-      this._chatroomModel = chatRoomModel;
+      _chatroomModel = chatRoomModel;
 
       if (this._chatList.isEmpty) {
         ChatService().getChatList(_chatRoomKey).then((chatList) {

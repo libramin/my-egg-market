@@ -22,9 +22,9 @@ const LOCATION_CHATROOM_ID = 'chatroom_id';
 class HomeLocation extends BeamLocation {
   @override
   List<BeamPage> buildPages(BuildContext context, BeamState state) {
-    return [BeamPage(child: HomeScreen(), key: ValueKey(LOCATION_HOME)),
+    return [BeamPage(child: const HomeScreen(), key: ValueKey(LOCATION_HOME)),
       if (state.pathBlueprintSegments.contains(LOCATION_SEARCH))
-        BeamPage(child: SearchScreen(),key: ValueKey(LOCATION_SEARCH)),
+        BeamPage(child: const SearchScreen(),key: ValueKey(LOCATION_SEARCH)),
     ];
   }
 
@@ -81,8 +81,9 @@ class ItemLocation extends BeamLocation {
   }
 
   @override
-  // TODO: implement pathBlueprints
   List get pathBlueprints =>
-      ['/$LOCATION_ITEM/:$LOCATION_ITEM_ID/:$LOCATION_CHATROOM_ID',
+      [
+        '/$LOCATION_SEARCH/:$LOCATION_ITEM_ID/:$LOCATION_CHATROOM_ID',
+        '/$LOCATION_ITEM/:$LOCATION_ITEM_ID/:$LOCATION_CHATROOM_ID',
       '/:$LOCATION_CHATROOM_ID'];
 }

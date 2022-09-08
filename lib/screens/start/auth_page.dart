@@ -18,11 +18,11 @@ class AuthPage extends StatefulWidget {
 const Duration duration = Duration(milliseconds: 300);
 
 class _AuthPageState extends State<AuthPage> {
-  TextEditingController _phoneNumberController =
+  final TextEditingController _phoneNumberController =
       TextEditingController(text: '010');
-  TextEditingController _numController = TextEditingController();
-  GlobalKey<FormState> _phoneNumFormKey = GlobalKey<FormState>();
-  GlobalKey<FormState> _NumFormKey = GlobalKey<FormState>();
+  final TextEditingController _numController = TextEditingController();
+  final GlobalKey<FormState> _phoneNumFormKey = GlobalKey<FormState>();
+  final GlobalKey<FormState> _codeNumFormKey = GlobalKey<FormState>();
 
   VerificationStatus _verificationStatus = VerificationStatus.none;
 
@@ -31,6 +31,7 @@ class _AuthPageState extends State<AuthPage> {
 
   @override
   void dispose() {
+    _phoneNumberController.dispose();
     _numController.dispose();
     super.dispose();
   }
@@ -45,7 +46,7 @@ class _AuthPageState extends State<AuthPage> {
           ignoring: _verificationStatus == VerificationStatus.verifying,
           child: Scaffold(
             appBar: AppBar(
-              title: Text('전화번호 로그인'),
+              title: const Text('전화번호 로그인'),
             ),
             body: GestureDetector(
               onTap: () {
@@ -63,14 +64,14 @@ class _AuthPageState extends State<AuthPage> {
                           width: size.width * 0.2,
                           height: size.width * 0.2,
                         ),
-                        SizedBox(
+                        const SizedBox(
                           width: 16,
                         ),
-                        Text(
+                        const Text(
                             '에그마켓은 휴대폰 번호로 가입해요.\n번호는 안전하게 보관 되며\n어디에도 공개되지 않아요.')
                       ],
                     ),
-                    SizedBox(height: 20),
+                    const SizedBox(height: 20),
                     Form(
                       key: _phoneNumFormKey,
                       child: TextFormField(
@@ -79,7 +80,7 @@ class _AuthPageState extends State<AuthPage> {
                         inputFormatters: [
                           MaskedInputFormatter('000 0000 0000')
                         ],
-                        decoration: InputDecoration(
+                        decoration: const InputDecoration(
                           border: OutlineInputBorder(
                               borderSide: BorderSide(color: Colors.grey)),
                         ),
@@ -92,7 +93,7 @@ class _AuthPageState extends State<AuthPage> {
                         },
                       ),
                     ),
-                    SizedBox(height: 10),
+                    const SizedBox(height: 10),
                     TextButton(
                         onPressed: () async {
                           if(_verificationStatus == VerificationStatus.codeSending){
@@ -121,7 +122,6 @@ class _AuthPageState extends State<AuthPage> {
                                   },
                                   verificationFailed:
                                       (FirebaseAuthException error) {
-                                    print(error.message);
 
                                     setState(() {
                                       _verificationStatus =
@@ -148,11 +148,11 @@ class _AuthPageState extends State<AuthPage> {
                         },
                         child: (_verificationStatus ==
                                 VerificationStatus.codeSending)
-                            ? CircularProgressIndicator(
+                            ? const CircularProgressIndicator(
                                 color: Colors.white,
                               )
-                            : Text('인증문자 발송')),
-                    SizedBox(height: 20),
+                            : const Text('인증문자 발송')),
+                    const SizedBox(height: 20),
                     AnimatedOpacity(
                       duration: duration,
                       opacity: (_verificationStatus == VerificationStatus.none)
@@ -164,12 +164,13 @@ class _AuthPageState extends State<AuthPage> {
                         height: _getVerificationHeight(_verificationStatus),
                         curve: Curves.easeInOut,
                         child: Form(
-                          key: _NumFormKey,
+                          key: _codeNumFormKey,
                           child: TextFormField(
                             controller: _numController,
                             keyboardType: TextInputType.number,
+                            obscureText: true,
                             inputFormatters: [MaskedInputFormatter('000000')],
-                            decoration: InputDecoration(
+                            decoration: const InputDecoration(
                               border: OutlineInputBorder(
                                   borderSide: BorderSide(color: Colors.grey)),
                             ),
@@ -190,9 +191,9 @@ class _AuthPageState extends State<AuthPage> {
                         curve: Curves.easeInOut,
                         child: TextButton(
                             onPressed: () {
-                              if (_NumFormKey.currentState != null) {
+                              if (_codeNumFormKey.currentState != null) {
                                 bool sucess =
-                                    _NumFormKey.currentState!.validate();
+                                    _codeNumFormKey.currentState!.validate();
                                 if (sucess) {
                                   attempVerify(context);
                                 }
@@ -200,10 +201,10 @@ class _AuthPageState extends State<AuthPage> {
                             },
                             child: (_verificationStatus ==
                                     VerificationStatus.verifying)
-                                ? CircularProgressIndicator(
+                                ? const CircularProgressIndicator(
                                     color: Colors.white,
                                   )
-                                : Text('인증'))),
+                                : const Text('인증'))),
                   ],
                 ),
               ),
@@ -241,8 +242,7 @@ class _AuthPageState extends State<AuthPage> {
 
       await FirebaseAuth.instance.signInWithCredential(credential);
     } catch (e) {
-      print('faile!!');
-      ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text('코드 재확인')));
+      ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text('인증코드를 다시 확인해주세요')));
     }
 
     setState(() {

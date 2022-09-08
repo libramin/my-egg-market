@@ -29,7 +29,6 @@ class UserNotifier extends ChangeNotifier {
       final String address = prefs.getString(SHARED_ADDRESS) ?? '';
       final double lat = prefs.getDouble(SHARED_LAT) ?? 0;
       final double lon = prefs.getDouble(SHARED_LON) ?? 0;
-      String phoneNumber = user.phoneNumber!;
       String userKey = user.uid;
 
       UserModel userModel = UserModel(
@@ -43,6 +42,10 @@ class UserNotifier extends ChangeNotifier {
       _userModel = await UserService().getUserModel(userKey);
       print(_userModel!.toJson().toString());
     }
+  }
+
+  set userModelReset (UserModel? userModel){
+    _userModel = userModel;
   }
 
   User? get user => _user;

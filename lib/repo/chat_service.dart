@@ -55,9 +55,10 @@ class ChatService {
 
   var snapshotToChatroom = StreamTransformer<
       DocumentSnapshot<Map<String, dynamic>>,
-      ChatroomModel>.fromHandlers(handleData: (snapshot, sink) {
-    ChatroomModel chatroomModel = ChatroomModel.fromSnapshot(snapshot);
-    sink.add(chatroomModel);
+      ChatroomModel>.fromHandlers(
+      handleData: (snapshot, sink) {
+          ChatroomModel chatroomModel = ChatroomModel.fromSnapshot(snapshot);
+          sink.add(chatroomModel);
   });
 
   Future<List<ChatModel>> getChatList(String chatroomKey) async {
@@ -107,7 +108,8 @@ class ChatService {
         .doc(chatroomKey)
         .collection(COL_CHATS)
         .orderBy(DOC_CREATEDDATE, descending: true)
-        .endAtDocument(await oldestChatRef.get())
+        // .endAtDocument(await oldestChatRef.get())
+        .startAfterDocument(await oldestChatRef.get())
         .limit(10)
         .get();
 

@@ -7,7 +7,7 @@ import 'package:provider/provider.dart';
 class StartScreen extends StatelessWidget {
   StartScreen({Key? key}) : super(key: key);
 
-  PageController _pageController = PageController();
+  final PageController _pageController = PageController();
 
   @override
   Widget build(BuildContext context) {
@@ -15,11 +15,11 @@ class StartScreen extends StatelessWidget {
       value: _pageController,
       child: Scaffold(
         body: PageView(
-          // physics: NeverScrollableScrollPhysics(),
+          physics: const NeverScrollableScrollPhysics(),
           controller: _pageController,
           children: [
-            IntroPage(),
-            AddressPage(),
+            const IntroPage(),
+            const AddressPage(),
             AuthPage(),
           ],
         ),

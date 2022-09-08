@@ -3,8 +3,8 @@
 /// input : {"point":{"x":"127.05855","y":"37.60168"},"crs":"","type":"PARCEL"}
 /// result : [{"zipcode":"02789","type":"parcel","text":"서울특별시 성북구 석관동 409","structure":{"level0":"대한민국","level1":"서울특별시","level2":"성북구","level3":"","level4L":"석관동","level4LC":"1129013900","level4A":"석관동","level4AC":"1129081000","level5":"409임","detail":""}}]
 
-class NowAddressModel {
-  NowAddressModel({
+class AddressModelForLocation {
+  AddressModelForLocation({
       Service? service, 
       String? status, 
       Input? input, 
@@ -15,7 +15,7 @@ class NowAddressModel {
     _result = result;
 }
 
-  NowAddressModel.fromJson(dynamic json) {
+  AddressModelForLocation.fromJson(dynamic json) {
     _service = json['service'] != null ? Service.fromJson(json['service']) : null;
     _status = json['status'];
     _input = json['input'] != null ? Input.fromJson(json['input']) : null;

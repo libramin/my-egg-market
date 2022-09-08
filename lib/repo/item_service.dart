@@ -6,9 +6,7 @@ import 'package:my_egg_market/data/item_model.dart';
 
 class ItemService {
   static final ItemService _itemService = ItemService._internal();
-
   factory ItemService() => _itemService;
-
   ItemService._internal();
 
   Future createNewItem(

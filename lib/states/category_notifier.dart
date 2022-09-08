@@ -1,4 +1,4 @@
-import 'package:flutter/cupertino.dart';
+import 'package:flutter/widgets.dart';
 
 CategoryNotifier categoryNotifier = CategoryNotifier();
 
@@ -15,7 +15,6 @@ class CategoryNotifier extends ChangeNotifier{
 }
 
 const List<String> categories = [
-  '선택',
   '전자기기',
   '생활가전',
   '가구/인테리어',

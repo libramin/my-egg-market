@@ -3,6 +3,8 @@ import 'package:flutter/material.dart';
 import 'package:my_egg_market/data/item_model.dart';
 import 'package:my_egg_market/repo/item_service.dart';
 import 'package:my_egg_market/router/locations.dart';
+import 'package:my_egg_market/screens/item/item_detail_screen.dart';
+import 'package:my_egg_market/widget/item_list_widget.dart';
 import 'package:shimmer/shimmer.dart';
 import 'package:beamer/beamer.dart';
 
@@ -15,7 +17,7 @@ class HomePage extends StatefulWidget {
 }
 
 class _HomePageState extends State<HomePage> {
-  List<ItemModel> _itmes = [];
+  final List<ItemModel> _items = [];
   bool init = false;
 
   @override
@@ -31,20 +33,20 @@ class _HomePageState extends State<HomePage> {
   Widget build(BuildContext context) {
     return AnimatedSwitcher(
         duration: Duration(milliseconds: 500),
-        child: (_itmes.isNotEmpty)
-            ? _ListView()
-            : _ShimmerListView());
+        child: (_items.isNotEmpty)
+            ? _listView()
+            : _shimmerListView());
   }
 
   Future _onRefresh ()async{
-    _itmes.clear();
-    _itmes.addAll(await ItemService().getItems(widget.userKey));
+    _items.clear();
+    _items.addAll(await ItemService().getItems(widget.userKey));
     setState(() {
 
     });
   }
 
-  Widget _ListView() {
+  Widget _listView() {
     return RefreshIndicator(
       onRefresh: _onRefresh,
       child: LayoutBuilder(
@@ -52,92 +54,24 @@ class _HomePageState extends State<HomePage> {
           Size size = MediaQuery.of(context).size;
           final imgSize = size.width / 4;
           return ListView.separated(
-              padding: EdgeInsets.all(16),
+              padding: const EdgeInsets.all(16),
               itemBuilder: (context, index) {
-                ItemModel item = _itmes[index];
-                return InkWell(
-                  onTap: (){
-                    context.beamToNamed('/$LOCATION_ITEM/${item.itemKey}');
-                  },
-                  child: SizedBox(
-                    height: imgSize,
-                    child: Row(
-                      children: [
-                        ClipRRect(
-                          borderRadius: BorderRadius.circular(8.0),
-                          child: Image.network(
-                            item.imageDownUrl[0],
-                            fit: BoxFit.cover,
-                            width: imgSize,
-                            height: imgSize,
-                          ),
-                        ),
-                        SizedBox(
-                          width: 10,
-                        ),
-                        Expanded(
-                          child: Container(
-                            child: Column(
-                              crossAxisAlignment: CrossAxisAlignment.start,
-                              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                              children: [
-                                Text(item.title, style: TextStyle(fontSize: 16)),
-                                Row(
-                                  children: [
-                                    Text('강북구 수유동 ',
-                                        style: TextStyle(
-                                            fontSize: 13, color: Colors.grey)),
-                                    Text('• 10분전',
-                                        style: TextStyle(
-                                            fontSize: 13, color: Colors.grey)),
-                                  ],
-                                ),
-                                Text('${item.price.toString()}원',
-                                    style: TextStyle(
-                                        fontSize: 17, fontWeight: FontWeight.bold)),
-                                Row(
-                                  mainAxisAlignment: MainAxisAlignment.end,
-                                  children: [
-                                    Icon(
-                                      CupertinoIcons.chat_bubble_2,
-                                      color: Colors.grey,
-                                      size: 20,
-                                    ),
-                                    Text('12',
-                                        style: TextStyle(
-                                            fontSize: 13, color: Colors.grey)),
-                                    Icon(
-                                      CupertinoIcons.heart,
-                                      color: Colors.grey,
-                                      size: 20,
-                                    ),
-                                    Text('4',
-                                        style: TextStyle(
-                                            fontSize: 13, color: Colors.grey)),
-                                  ],
-                                )
-                              ],
-                            ),
-                          ),
-                        )
-                      ],
-                    ),
-                  ),
-                );
+                ItemModel item = _items[index];
+                return ItemListWidget(item,imgSize: imgSize,);
               },
               separatorBuilder: (context, index) {
-                return Divider(
+                return const Divider(
                   height: 32,
                   thickness: 1,
                 );
               },
-              itemCount: _itmes.length);
+              itemCount: _items.length);
         },
       ),
     );
   }
 
-  Widget _ShimmerListView() {
+  Widget _shimmerListView() {
     return Shimmer.fromColors(
       highlightColor: Colors.grey[300]!,
       baseColor: Colors.grey[200]!,
@@ -146,7 +80,7 @@ class _HomePageState extends State<HomePage> {
           Size size = MediaQuery.of(context).size;
           final imgSize = size.width / 4;
           return ListView.separated(
-              padding: EdgeInsets.all(16),
+              padding: const EdgeInsets.all(16),
               itemBuilder: (context, index) {
                 return SizedBox(
                   height: imgSize,
@@ -154,7 +88,7 @@ class _HomePageState extends State<HomePage> {
                     children: [
                       _shimmerContainer(
                           height: imgSize, width: imgSize, radius: 8.0),
-                      SizedBox(width: 10),
+                      const SizedBox(width: 10),
                       Expanded(
                         child: Column(
                           crossAxisAlignment: CrossAxisAlignment.start,
@@ -181,7 +115,7 @@ class _HomePageState extends State<HomePage> {
                 );
               },
               separatorBuilder: (context, index) {
-                return Divider(
+                return const Divider(
                   color: Colors.black87,
                   height: 32,
                   thickness: 1,

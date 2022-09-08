@@ -24,18 +24,18 @@ class ChatBubble extends StatelessWidget {
       mainAxisAlignment: MainAxisAlignment.end,
       children: [
         Text(
-          '오전 10:25',
-          style: TextStyle(color: Colors.grey),
+          chatModel.createdDate.toString(),
+          style: const TextStyle(color: Colors.grey),
         ),
-        SizedBox(
+        const SizedBox(
           width: 6,
         ),
         Container(
           child: Text(
             chatModel.msg,
-            style: TextStyle(color: Colors.white, fontSize: 18),
+            style: const TextStyle(color: Colors.white, fontSize: 18),
           ),
-          padding: EdgeInsets.symmetric(vertical: 12, horizontal: 16),
+          padding: const EdgeInsets.symmetric(vertical: 12, horizontal: 16),
           constraints:
               BoxConstraints(minHeight: 40, maxWidth: size.width * 0.5),
           decoration: BoxDecoration(
@@ -58,7 +58,7 @@ class ChatBubble extends StatelessWidget {
             height: 38,
           ),
         ),
-        SizedBox(
+        const SizedBox(
           width: 6,
         ),
         Row(
@@ -68,20 +68,20 @@ class ChatBubble extends StatelessWidget {
             Container(
               child: Text(
                 chatModel.msg,
-                style: TextStyle(color: Colors.black87, fontSize: 18),
+                style: const TextStyle(color: Colors.black87, fontSize: 18),
               ),
-              padding: EdgeInsets.symmetric(vertical: 12, horizontal: 16),
+              padding: const EdgeInsets.symmetric(vertical: 12, horizontal: 16),
               constraints:
                   BoxConstraints(minHeight: 40, maxWidth: size.width * 0.5),
               decoration: BoxDecoration(
                   color: Colors.grey[200],
                   borderRadius: BorderRadius.circular(30)),
             ),
-            SizedBox(
+            const SizedBox(
               width: 6,
             ),
             Text(
-              '오전 10:25',
+              chatModel.createdDate.toString(),
               style: TextStyle(color: Colors.grey),
             ),
           ],

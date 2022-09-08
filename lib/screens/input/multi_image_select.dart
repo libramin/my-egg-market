@@ -50,12 +50,12 @@ class _MultiImageSelectState extends State<MultiImageSelect> {
                     decoration: BoxDecoration(
                         borderRadius: BorderRadius.circular(16),
                         border: Border.all(color: Colors.grey, width: 1)),
-                    child: _isPickingImages? Padding(
-                      padding: const EdgeInsets.all(30.0),
+                    child: _isPickingImages? const Padding(
+                      padding:  EdgeInsets.all(30.0),
                       child: CircularProgressIndicator(),
                     ):Column(
                       mainAxisAlignment: MainAxisAlignment.center,
-                      children: [
+                      children: const [
                         Icon(
                           Icons.camera_alt_rounded,
                           color: Colors.grey,
@@ -81,7 +81,7 @@ class _MultiImageSelectState extends State<MultiImageSelect> {
                             width: (size.width / 3) - 20,
                             height: (size.width / 3) - 20,
                             child: Image.memory(selectImageNotifier.images[index],
-                              fit: BoxFit.cover,),
+                              fit: BoxFit.cover),
                           ),
                         ),
                       ),
@@ -92,10 +92,7 @@ class _MultiImageSelectState extends State<MultiImageSelect> {
                           padding: EdgeInsets.zero,
                             onPressed: (){
                             selectImageNotifier.removeImage(index);
-                            setState(() {
-
-                            });
-                            }, icon: Icon(Icons.remove_circle,
+                            }, icon: const Icon(Icons.remove_circle,
                         color: Colors.black54,)),
                       )
                     ],

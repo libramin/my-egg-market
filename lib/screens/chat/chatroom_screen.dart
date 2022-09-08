@@ -1,3 +1,4 @@
+import 'package:beamer/beamer.dart';
 import 'package:flutter/material.dart';
 import 'package:my_egg_market/data/chat_model.dart';
 import 'package:my_egg_market/data/chatroom_model.dart';
@@ -19,7 +20,7 @@ class ChatRoomScreen extends StatefulWidget {
 }
 
 class _ChatRoomScreenState extends State<ChatRoomScreen> {
-  TextEditingController _textEditingController = TextEditingController();
+  final TextEditingController _textEditingController = TextEditingController();
 
   late ChatNotifier _chatNotifier;
 
@@ -41,49 +42,64 @@ class _ChatRoomScreenState extends State<ChatRoomScreen> {
       value: _chatNotifier,
       child: Consumer<ChatNotifier>(
         builder: (context,chatNotifier,child){
-          Size _size = MediaQuery.of(context).size;
-          UserModel userModel = context.read<UserNotifier>().userModel!;
-          return Scaffold(
-            backgroundColor: Colors.grey[200],
-            appBar: AppBar(
-              leading: IconButton(onPressed: () {}, icon: Icon(Icons.arrow_back)),
-              title: Text('비녀'),
-              centerTitle: true,
-              actions: [
-                IconButton(onPressed: () {}, icon: Icon(Icons.phone)),
-                IconButton(onPressed: () {}, icon: Icon(Icons.more_vert))
-              ],
-            ),
-            body: SafeArea(
-              child: Column(
-                children: [
-                  _buildItemInfo(context),
-                  Expanded(
-                      child: Container(
-                        color: Colors.white,
-                        child: ListView.separated(
-                          reverse: true,
-                            padding: EdgeInsets.all(16),
-                            itemBuilder: (context, index) {
-                              bool isMine = chatNotifier.chatList[index].userKey == userModel.userKey;
-                              return ChatBubble(
-                                size: _size,
-                                isMine: isMine,
-                                chatModel: chatNotifier.chatList[index],
-                              );
-                            },
-                            separatorBuilder: (context, index) {
-                              return SizedBox(
-                                height: 10,
-                              );
-                            },
-                            itemCount: chatNotifier.chatList.length),
-                      )),
-                  _buildInputBar(userModel)
+          if(chatNotifier.chatroomModel != null) {
+            Size _size = MediaQuery
+                .of(context)
+                .size;
+            UserModel userModel = context
+                .read<UserNotifier>()
+                .userModel!;
+            bool iamBuyer = chatNotifier.chatroomModel!.buyerKey ==
+                userModel.userKey;
+            var chatName = iamBuyer
+                ? chatNotifier.chatroomModel!.sellerKey
+                : chatNotifier.chatroomModel!.buyerKey;
+
+            return Scaffold(
+              backgroundColor: Colors.grey[200],
+              appBar: AppBar(
+                title: Text(chatName.replaceRange(0, 18, '')),
+                centerTitle: true,
+                actions: [
+                  IconButton(onPressed: () {}, icon: const Icon(Icons.phone)),
+                  IconButton(
+                      onPressed: () {}, icon: const Icon(Icons.more_vert))
                 ],
               ),
-            ),
-          );
+              body: SafeArea(
+                child: Column(
+                  children: [
+                    _buildItemInfo(context),
+                    Expanded(
+                        child: Container(
+                          color: Colors.white,
+                          child: ListView.separated(
+                              reverse: true,
+                              padding: const EdgeInsets.all(16),
+                              itemBuilder: (context, index) {
+                                bool isMine = chatNotifier.chatList[index]
+                                    .userKey == userModel.userKey;
+                                return ChatBubble(
+                                  size: _size,
+                                  isMine: isMine,
+                                  chatModel: chatNotifier.chatList[index],
+                                );
+                              },
+                              separatorBuilder: (context, index) {
+                                return const SizedBox(
+                                  height: 10,
+                                );
+                              },
+                              itemCount: chatNotifier.chatList.length),
+                        )),
+                    _buildInputBar(userModel)
+                  ],
+                ),
+              ),
+            );
+          }else{
+            return const Scaffold(body: Center(child: CircularProgressIndicator(),),);
+          }
         },
       ),
     );
@@ -98,44 +114,52 @@ class _ChatRoomScreenState extends State<ChatRoomScreen> {
                   content: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      ListTile(
-                        leading: chatroomModel==null?Shimmer.fromColors(baseColor: Colors.grey,
-                        highlightColor: Colors.grey,
-                        child: Container(color: Colors.white,)):Image.network('https://picsum.photos/100'),
-                        title: Row(
+                      Padding(
+                        padding: const EdgeInsets.symmetric(horizontal: 15),
+                        child: Row(
                           children: [
-                            Text(
-                              '거래완료',
-                              style: TextStyle(fontWeight: FontWeight.bold),
+                   chatroomModel==null?Shimmer.fromColors(baseColor: Colors.grey,
+                        highlightColor: Colors.grey,
+                        child: Container(color: Colors.white,width: 50,height: 50,)):
+                            Image.network(chatroomModel.itemImage,width: 50,height: 50,fit: BoxFit.cover,),
+                            const SizedBox(width: 5,),
+                            Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                                Row(
+                                  children: [
+                                    const Text('거래중',style: TextStyle(fontWeight: FontWeight.bold,color: Colors.grey),),
+                                    const SizedBox(width: 10,),
+                                    Text(chatroomModel==null?'':chatroomModel.itemTitle,
+                                    style: TextStyle(fontWeight: FontWeight.bold),),
+                                  ],
+                                ),
+                                Text(chatroomModel==null?'0원': '${chatroomModel.itemPrice.toString()}원',
+                                style: TextStyle(fontWeight: FontWeight.bold),)
+                              ],
                             ),
-                            SizedBox(
-                              width: 10,
-                            ),
-                            Text(chatroomModel==null?'':chatroomModel.itemTitle)
                           ],
-                        ),
-                        subtitle: Text(
-                          chatroomModel==null?'': '${chatroomModel.itemPrice.toString()}원',
-                          style: TextStyle(fontWeight: FontWeight.bold),
+
                         ),
                       ),
+                      const SizedBox(height: 10,),
                       Padding(
                         padding: const EdgeInsets.only(left: 16, bottom: 12),
                         child: SizedBox(
                           height: 32,
                           child: TextButton.icon(
                             onPressed: () {},
-                            icon: Icon(
+                            icon: const Icon(
                               Icons.edit,
                               color: Colors.black87,
                             ),
-                            label: Text(
+                            label: const Text(
                               '보낸 후기 보기',
                               style: TextStyle(color: Colors.black87),
                             ),
                             style: TextButton.styleFrom(
                                 backgroundColor: Colors.white,
-                                side: BorderSide(color: Colors.grey)),
+                                side: const BorderSide(color: Colors.grey)),
                           ),
                         ),
                       ),
@@ -149,7 +173,7 @@ class _ChatRoomScreenState extends State<ChatRoomScreen> {
       children: [
         IconButton(
             onPressed: () {},
-            icon: Icon(
+            icon: const Icon(
               Icons.add,
               color: Colors.grey,
             )),
@@ -161,26 +185,27 @@ class _ChatRoomScreenState extends State<ChatRoomScreen> {
               fillColor: Colors.white,
               filled: true,
               isDense: true,
-              contentPadding: EdgeInsets.all(10),
-              suffixIcon: Icon(
+              contentPadding: const EdgeInsets.all(10),
+              suffixIcon: const Icon(
                 Icons.emoji_emotions_outlined,
                 color: Colors.grey,
               ),
-              suffixIconConstraints: BoxConstraints.tight(Size(40, 40)),
+              suffixIconConstraints: BoxConstraints.tight(const Size(40, 40)),
               border: OutlineInputBorder(
-                  borderSide: BorderSide(color: Colors.grey),
+                  borderSide: const BorderSide(color: Colors.grey),
                   borderRadius: BorderRadius.circular(20))),
         )),
         IconButton(
             onPressed: () async {
-              ChatModel chatmodel = ChatModel(
+              ChatModel chatModel = ChatModel(
                   msg: _textEditingController.text,
                   createdDate: DateTime.now(),
                   userKey: userModel.userKey);
-              _chatNotifier.addNewChat(chatmodel);
+
+              _chatNotifier.addNewChat(chatModel);
               _textEditingController.clear();
             },
-            icon: Icon(
+            icon: const Icon(
               Icons.send,
               color: Colors.grey,
             )),

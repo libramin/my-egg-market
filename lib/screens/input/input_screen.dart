@@ -22,15 +22,14 @@ class InputScreen extends StatefulWidget {
 }
 
 class _InputScreenState extends State<InputScreen> {
-  TextEditingController _priceController = TextEditingController();
-  TextEditingController _titleController = TextEditingController();
-  TextEditingController _detailController = TextEditingController();
+  final TextEditingController _priceController = TextEditingController();
+  final TextEditingController _titleController = TextEditingController();
+  final TextEditingController _detailController = TextEditingController();
 
   bool _suggestPrice = false;
   bool _isCreatingItem = false;
 
-  var _border =
-      UnderlineInputBorder(borderSide: BorderSide(color: Colors.transparent));
+  final _border = const UnderlineInputBorder(borderSide: BorderSide(color: Colors.transparent));
 
   @override
   void dispose() {
@@ -38,6 +37,157 @@ class _InputScreenState extends State<InputScreen> {
     _titleController.dispose();
     _detailController.dispose();
     super.dispose();
+  }
+
+
+
+  @override
+  Widget build(BuildContext context) {
+    return LayoutBuilder(
+      builder: (context, constraints) {
+        Size _size = MediaQuery.of(context).size;
+        return IgnorePointer(
+          ignoring: _isCreatingItem,
+          child: GestureDetector(
+            onTap: () {
+              FocusScope.of(context).unfocus();
+            },
+            child: Scaffold(
+                appBar: AppBar(
+                  leading: IconButton(
+                      onPressed: () {
+                        context.read<CategoryNotifier>().set('카테고리 선택');
+                        context.beamBack();
+                      },
+                      icon: const Icon(Icons.clear)),
+                  title: const Text('중고거래 글쓰기'),
+                  actions: [
+                    TextButton(
+                      onPressed: attemptCreateItem,
+                      child: const Text(
+                        '완료',
+                        style: TextStyle(color: Colors.orange, fontSize: 18),
+                      ),
+                      style: TextButton.styleFrom(
+                          backgroundColor: Colors.white,
+                          primary: Colors.orange),
+                    )
+                  ],
+                  bottom: PreferredSize(
+                    preferredSize: Size(_size.width, 2),
+                    child: _isCreatingItem
+                        ? const LinearProgressIndicator(
+                            minHeight: 2,
+                          )
+                        : Container(),
+                  ),
+                ),
+                body: ListView(
+                  children: [
+                    MultiImageSelect(),
+                    _divider(),
+                    TextFormField(
+                      controller: _titleController,
+                      decoration: InputDecoration(
+                          hintText: '글 제목',
+                          hintStyle: const TextStyle(color: Colors.grey),
+                          border: _border,
+                          enabledBorder: _border,
+                          focusedBorder: _border,
+                          contentPadding: const EdgeInsets.symmetric(horizontal: 10)),
+                    ),
+                    _divider(),
+                    ListTile(
+                      contentPadding: const EdgeInsets.symmetric(horizontal: 10),
+                      dense: true,
+                      title: Text(
+                        context.read<CategoryNotifier>().currentCategory,
+                        style: const TextStyle(fontWeight: FontWeight.bold),
+                      ),
+                      trailing: const Icon(Icons.navigate_next),
+                      onTap: () {
+                        context.beamToNamed('/category_input');
+                      },
+                    ),
+                    _divider(),
+                    Row(
+                      children: [
+                        Expanded(
+                          child: TextFormField(
+                            controller: _priceController,
+                            keyboardType: TextInputType.number,
+                            inputFormatters: [
+                              MoneyInputFormatter(
+                                  mantissaLength: 0, trailingSymbol: '원')
+                            ],
+                            onChanged: (value) {
+                              if (_priceController.text == '0원') {
+                                _priceController.clear();
+                              }
+                            },
+                            decoration: InputDecoration(
+                                hintText: '₩ 가격',
+                                hintStyle: const TextStyle(color: Colors.grey),
+                                border: _border,
+                                enabledBorder: _border,
+                                focusedBorder: _border,
+                                contentPadding:
+                                    const EdgeInsets.symmetric(horizontal: 10)),
+                          ),
+                        ),
+                        TextButton.icon(
+                          onPressed: () {
+                            setState(() {
+                              _suggestPrice = !_suggestPrice;
+                            });
+                          },
+                          icon: Icon(
+                            _suggestPrice
+                                ? Icons.check_circle
+                                : Icons.check_circle_outline,
+                            color: _suggestPrice ? Colors.orange : Colors.grey,
+                          ),
+                          label: Text(
+                            '가격제안 받기',
+                            style: TextStyle(
+                                color: _suggestPrice
+                                    ? Colors.orange
+                                    : Colors.grey),
+                          ),
+                          style: TextButton.styleFrom(
+                              backgroundColor: Colors.transparent),
+                        ),
+                      ],
+                    ),
+                    _divider(),
+                    TextFormField(
+                      controller: _detailController,
+                      maxLines: null,
+                      keyboardType: TextInputType.multiline,
+                      decoration: InputDecoration(
+                          hintText: '올릴 게시글 내용을 작성해주세요.',
+                          hintStyle: const TextStyle(color: Colors.grey),
+                          border: _border,
+                          enabledBorder: _border,
+                          focusedBorder: _border,
+                          contentPadding: const EdgeInsets.symmetric(horizontal: 10)),
+                    ),
+                  ],
+                )),
+          ),
+        );
+      },
+    );
+  }
+
+  Divider _divider() {
+    return Divider(
+      height: 1,
+      thickness: 1,
+      color: Colors.grey[300],
+      endIndent: 10,
+      indent: 10,
+    );
   }
 
   void attemptCreateItem() async {
@@ -73,154 +223,6 @@ class _InputScreenState extends State<InputScreen> {
     await ItemService().createNewItem(itemModel, itemKey, userNotifier.user!.uid);
 
     context.beamBack();
-  }
-
-  @override
-  Widget build(BuildContext context) {
-    return LayoutBuilder(
-      builder: (context, constraints) {
-        Size _size = MediaQuery.of(context).size;
-        return IgnorePointer(
-          ignoring: _isCreatingItem,
-          child: GestureDetector(
-            onTap: () {
-              FocusScope.of(context).unfocus();
-            },
-            child: Scaffold(
-                appBar: AppBar(
-                  leading: IconButton(
-                      onPressed: () {
-                        context.beamBack();
-                      },
-                      icon: Icon(Icons.clear)),
-                  title: const Text('중고거래 글쓰기'),
-                  actions: [
-                    TextButton(
-                      onPressed: attemptCreateItem,
-                      child: Text(
-                        '완료',
-                        style: TextStyle(color: Colors.orange, fontSize: 18),
-                      ),
-                      style: TextButton.styleFrom(
-                          backgroundColor: Colors.white,
-                          primary: Colors.orange),
-                    )
-                  ],
-                  bottom: PreferredSize(
-                    preferredSize: Size(_size.width, 2),
-                    child: _isCreatingItem
-                        ? LinearProgressIndicator(
-                            minHeight: 2,
-                          )
-                        : Container(),
-                  ),
-                ),
-                body: ListView(
-                  children: [
-                    MultiImageSelect(),
-                    _divider(),
-                    TextFormField(
-                      controller: _titleController,
-                      decoration: InputDecoration(
-                          hintText: '글 제목',
-                          hintStyle: TextStyle(color: Colors.grey),
-                          border: _border,
-                          enabledBorder: _border,
-                          focusedBorder: _border,
-                          contentPadding: EdgeInsets.symmetric(horizontal: 10)),
-                    ),
-                    _divider(),
-                    ListTile(
-                      contentPadding: EdgeInsets.symmetric(horizontal: 10),
-                      dense: true,
-                      title: Text(
-                        context.watch<CategoryNotifier>().currentCategory,
-                        style: TextStyle(fontWeight: FontWeight.bold),
-                      ),
-                      trailing: Icon(Icons.navigate_next),
-                      onTap: () {
-                        context.beamToNamed('/category_input');
-                      },
-                    ),
-                    _divider(),
-                    Row(
-                      children: [
-                        Expanded(
-                          child: TextFormField(
-                            controller: _priceController,
-                            keyboardType: TextInputType.number,
-                            inputFormatters: [
-                              MoneyInputFormatter(
-                                  mantissaLength: 0, trailingSymbol: '원')
-                            ],
-                            onChanged: (value) {
-                              if (_priceController.text == '0원') {
-                                _priceController.clear();
-                              }
-                            },
-                            decoration: InputDecoration(
-                                hintText: '₩ 가격',
-                                hintStyle: TextStyle(color: Colors.grey),
-                                border: _border,
-                                enabledBorder: _border,
-                                focusedBorder: _border,
-                                contentPadding:
-                                    EdgeInsets.symmetric(horizontal: 10)),
-                          ),
-                        ),
-                        TextButton.icon(
-                          onPressed: () {
-                            setState(() {
-                              _suggestPrice = !_suggestPrice;
-                            });
-                          },
-                          icon: Icon(
-                            _suggestPrice
-                                ? Icons.check_circle
-                                : Icons.check_circle_outline,
-                            color: _suggestPrice ? Colors.orange : Colors.grey,
-                          ),
-                          label: Text(
-                            '가격제안 받기',
-                            style: TextStyle(
-                                color: _suggestPrice
-                                    ? Colors.orange
-                                    : Colors.grey),
-                          ),
-                          style: TextButton.styleFrom(
-                              backgroundColor: Colors.transparent,
-                              primary: Colors.orange),
-                        ),
-                      ],
-                    ),
-                    _divider(),
-                    TextFormField(
-                      controller: _detailController,
-                      maxLines: null,
-                      keyboardType: TextInputType.multiline,
-                      decoration: InputDecoration(
-                          hintText: '올릴 게시글 내용을 작성해주세요.',
-                          hintStyle: TextStyle(color: Colors.grey),
-                          border: _border,
-                          enabledBorder: _border,
-                          focusedBorder: _border,
-                          contentPadding: EdgeInsets.symmetric(horizontal: 10)),
-                    ),
-                  ],
-                )),
-          ),
-        );
-      },
-    );
-  }
-
-  Divider _divider() {
-    return Divider(
-      height: 1,
-      thickness: 1,
-      color: Colors.grey[300],
-      endIndent: 10,
-      indent: 10,
-    );
+    context.read<CategoryNotifier>().set('카테고리 선택');
   }
 }

@@ -1,4 +1,10 @@
+import 'package:beamer/beamer.dart';
 import 'package:flutter/material.dart';
+import 'package:my_egg_market/data/item_model.dart';
+import 'package:my_egg_market/repo/algolia_service.dart';
+import 'package:my_egg_market/widget/item_list_widget.dart';
+
+import '../../router/locations.dart';
 
 class SearchScreen extends StatefulWidget {
   const SearchScreen({Key? key}) : super(key: key);
@@ -10,6 +16,8 @@ class SearchScreen extends StatefulWidget {
 class _SearchScreenState extends State<SearchScreen> {
 
   final TextEditingController _textEditingController = TextEditingController();
+  final List<ItemModel> items = [];
+  bool isProcessing = false;
 
   @override
   Widget build(BuildContext context) {
@@ -22,7 +30,18 @@ class _SearchScreenState extends State<SearchScreen> {
             height: 40,
             child: TextFormField(
               controller: _textEditingController,
-              onFieldSubmitted: (value){
+              autofocus: true,
+              onFieldSubmitted: (value)async{
+                isProcessing = true;
+                setState(() {
+
+                });
+                List<ItemModel> newItems = await AlgoliaService().queryItems(value);
+                if(newItems.isNotEmpty){
+                  items.clear();
+                  items.addAll(newItems);
+                }
+                isProcessing = false;
                 setState(() {
 
                 });
@@ -44,16 +63,26 @@ class _SearchScreenState extends State<SearchScreen> {
           ),
         ),
       ),
-      body: ListView.separated(
-          itemBuilder: (context, index) {
-            return ListTile(
-              title: Text(_textEditingController.text),
-            );
-          },
-          separatorBuilder: (context, index) {
-            return Container();
-          },
-          itemCount: 30),
+      body: Stack(
+        children: [
+          if(isProcessing)
+            LinearProgressIndicator(minHeight: 2,),
+          ListView.separated(
+            padding: const EdgeInsets.all(16),
+              itemBuilder: (context, index) {
+                ItemModel item = items[index];
+                Size size = MediaQuery.of(context).size;
+                return ItemListWidget(item,imgSize: size.width/4,);
+              },
+              separatorBuilder: (context, index) {
+                return const Divider(
+                  height: 32,
+                  thickness: 1,
+                );
+              },
+              itemCount: items.length),
+        ],
+      ),
     );
   }
 }

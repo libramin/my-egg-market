@@ -54,7 +54,7 @@ final Future<FirebaseApp> _initialization = Firebase.initializeApp();
     } else if (snapshot.connectionState == ConnectionState.done) {
       return EggApp();
     } else {
-      return SplashScreen();
+      return const SplashScreen();
     }
   }
 }

@@ -1,11 +1,13 @@
 import 'package:dio/dio.dart';
-import 'package:my_egg_market/data/addressModel.dart';
-import 'package:my_egg_market/data/nowAddressModel.dart';
+import 'package:flutter/foundation.dart';
 
-const VWORLD_KEY = '7CD43C88-9AF7-36AF-B0F8-E87EAE0A85F4';
+import '../data/address_model_location.dart';
+import '../data/address_model_search.dart';
 
-class AdderessService {
-  Future<SearchAddressModel> searchAddressBystr(String text) async {
+const VWORLD_KEY = '7CD43C88-9AF7-36AF-B0F8-E87EAE0A85F4'; //2022-11-06
+
+class AddressService {
+  Future<AddressModelForSearch> searchAddressBystr(String text) async {
     final formData = {
       'key': VWORLD_KEY,
       'request': 'search',
@@ -18,13 +20,15 @@ class AdderessService {
     final response = await Dio()
         .get('http://api.vworld.kr/req/search', queryParameters: formData)
         .catchError((e) {
-      print(e.error);
+      if (kDebugMode) {
+        print(e.error);
+      }
     });
-    SearchAddressModel addressModel = SearchAddressModel.fromJson(response.data['response']);
+    AddressModelForSearch addressModel = AddressModelForSearch.fromJson(response.data['response']);
     return addressModel;
   }
 
-  Future<List<NowAddressModel>> findAddressByCoordinate({required double log, required double lat}) async{
+  Future<List<AddressModelForLocation>> findAddressByCoordinate({required double log, required double lat}) async{
 
     final List<Map<String, dynamic>> formDatas = <Map<String, dynamic>> [];
 
@@ -64,15 +68,17 @@ class AdderessService {
       'point': '${log},${lat-0.01}',
     });
 
-    List<NowAddressModel> addresses = [];
+    List<AddressModelForLocation> addresses = [];
 
     for(Map<String, dynamic> formData in formDatas){
       final response = await Dio()
           .get('http://api.vworld.kr/req/address', queryParameters: formData)
           .catchError((e) {
-        print(e.error);
+        if (kDebugMode) {
+          print(e.error);
+        }
       });
-      NowAddressModel nowAddressModel = NowAddressModel.fromJson(response.data['response']);
+      AddressModelForLocation nowAddressModel = AddressModelForLocation.fromJson(response.data['response']);
 
       if(response.data['response']['status'] =='OK') addresses.add(nowAddressModel);
     }

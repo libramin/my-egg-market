@@ -1,8 +1,9 @@
 import 'package:flutter/material.dart';
+import 'package:my_egg_market/screens/splash_screen.dart';
 import 'package:provider/provider.dart';
 
 class IntroPage extends StatelessWidget {
-  IntroPage({Key? key}) : super(key: key);
+  const IntroPage({Key? key}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
@@ -13,20 +14,29 @@ class IntroPage extends StatelessWidget {
         final imgSize = _size.width - 20;
         final posImgSize = imgSize * 0.1;
 
-        return SafeArea(
-          child: Padding(
-            padding: const EdgeInsets.all(10.0),
-            child: Column(
-              mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-              children: [
-                _mainTitle(context),
-                _images(imgSize, posImgSize),
-                _title(),
-                _subTitle(),
-                _startButton(context)
-              ],
-            ),
-          ),
+        return FutureBuilder(
+          future: Future.delayed(const Duration(seconds: 1)),
+          builder: (context, snapshot) {
+            if(snapshot.connectionState == ConnectionState.done) {
+              return SafeArea(
+                child: Padding(
+                  padding: const EdgeInsets.all(10.0),
+                  child: Column(
+                    mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                    children: [
+                      _mainTitle(context),
+                      _images(imgSize, posImgSize),
+                      _title(),
+                      _subTitle(),
+                      _startButton(context)
+                    ],
+                  ),
+                ),
+              );
+            }else{
+              return SplashScreen();
+            }
+          }
         );
       },
     );
@@ -40,7 +50,7 @@ class IntroPage extends StatelessWidget {
                   TextButton(
                     onPressed: () {
                       context.read<PageController>().animateToPage(1,
-                          duration: Duration(milliseconds: 500),
+                          duration: const Duration(milliseconds: 500),
                           curve: Curves.ease);
                     },
                     child: Text(
@@ -55,14 +65,14 @@ class IntroPage extends StatelessWidget {
   }
 
   Text _subTitle() {
-    return Text(
+    return const Text(
                 '에그마켓은 동네 직거래 마켓이에요.\n내 동네를 설정하고 시작해보세요!',
                 style: TextStyle(fontSize: 16),
               );
   }
 
   Text _title() {
-    return Text(
+    return const Text(
                 '우리 동네 중고 직거래 에그 마켓',
                 style: TextStyle(fontSize: 22, fontWeight: FontWeight.bold),
               );

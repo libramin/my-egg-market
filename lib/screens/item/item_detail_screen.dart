@@ -24,23 +24,23 @@ class ItemDetailScreen extends StatefulWidget {
 }
 
 class _ItemDetailScreenState extends State<ItemDetailScreen> {
-  PageController _pageController = PageController();
-  ScrollController _scrollController = ScrollController();
+  final PageController _pageController = PageController();
+  final ScrollController _scrollController = ScrollController();
 
   Size? _size;
   num? _statusBarHeight;
   bool isAppbarCollapsed = false;
-  Widget _divider = Divider(
+  final Widget _divider = const Divider(
     height: 21,
     thickness: 1,
   );
-  Widget _gap = SizedBox(
+  final Widget _gap = const SizedBox(
     height: 20,
   );
 
-  void _goToChatroom(ItemModel itemModel, UserModel userModel) async{
-
-    String chatroomKey = ChatroomModel.generateChatRoomKey(userModel.userKey, itemModel.itemKey);
+  void _goToChatroom(ItemModel itemModel, UserModel userModel) async {
+    String chatroomKey =
+        ChatroomModel.generateChatRoomKey(userModel.userKey, itemModel.itemKey);
 
     ChatroomModel _chatroomModel = ChatroomModel(
         itemImage: itemModel.imageDownUrl[0],
@@ -59,7 +59,12 @@ class _ItemDetailScreenState extends State<ItemDetailScreen> {
         chatroomKey: chatroomKey);
     await ChatService().createNewChatRoom(_chatroomModel);
 
-    context.beamToNamed('/$LOCATION_ITEM/${widget.itemKey}/$chatroomKey');
+    BeamState beamState = Beamer.of(context).currentConfiguration!;
+    String currentPath = beamState.uri.toString();
+    String newPath = (currentPath == '/')?'/$chatroomKey':'$currentPath/$chatroomKey';
+    context.beamToNamed(newPath);
+
+    // context.beamToNamed('/$LOCATION_ITEM/${widget.itemKey}/$chatroomKey');
   }
 
   @override
@@ -109,39 +114,12 @@ class _ItemDetailScreenState extends State<ItemDetailScreen> {
                       body: CustomScrollView(
                         controller: _scrollController,
                         slivers: [
-                          SliverAppBar(
-                            expandedHeight: _size!.width,
-                            pinned: true,
-                            flexibleSpace: FlexibleSpaceBar(
-                              centerTitle: true,
-                              title: SmoothPageIndicator(
-                                  controller: _pageController, // PageController
-                                  count: itemModel.imageDownUrl.length,
-                                  effect: WormEffect(
-                                      activeDotColor:
-                                          Theme.of(context).primaryColor,
-                                      dotHeight: 10,
-                                      dotWidth: 10), // your preferred effect
-                                  onDotClicked: (index) {}),
-                              background: PageView.builder(
-                                controller: _pageController,
-                                allowImplicitScrolling: true,
-                                itemBuilder: (BuildContext context, int index) {
-                                  return Image.network(
-                                    itemModel.imageDownUrl[index],
-                                    fit: BoxFit.cover,
-                                    scale: 0.1,
-                                  );
-                                },
-                                itemCount: itemModel.imageDownUrl.length,
-                              ),
-                            ),
-                          ),
+                          _imageAppBar(itemModel, context),
                           SliverPadding(
-                            padding: EdgeInsets.all(10),
+                            padding: const EdgeInsets.all(10),
                             sliver: SliverList(
                                 delegate: SliverChildListDelegate([
-                              _userSection(userModel,itemModel),
+                              _userSection(userModel, itemModel),
                               _divider,
                               Text(
                                 itemModel.title,
@@ -182,7 +160,7 @@ class _ItemDetailScreenState extends State<ItemDetailScreen> {
                                       .copyWith(color: Colors.grey)),
                               _gap,
                               _divider,
-                              ListTile(
+                              const ListTile(
                                 contentPadding: EdgeInsets.zero,
                                 title: Text(
                                   '이 게시글 신고하기',
@@ -208,15 +186,15 @@ class _ItemDetailScreenState extends State<ItemDetailScreen> {
                                     MainAxisAlignment.spaceBetween,
                                 children: [
                                   Text(
-                                      '${userModel.phoneNumber.substring(9)}님의 판매 상품',
-                                      style: TextStyle(
+                                      '${itemModel.userKey.substring(18)}님의 판매 상품',
+                                      style: const TextStyle(
                                           fontWeight: FontWeight.bold,
                                           fontSize: 18)),
                                   SizedBox(
                                     width: _size!.width / 4,
                                     child: MaterialButton(
                                         onPressed: () {},
-                                        child: Align(
+                                        child: const Align(
                                           alignment: Alignment.centerRight,
                                           child: Text(
                                             '더보기',
@@ -235,7 +213,7 @@ class _ItemDetailScreenState extends State<ItemDetailScreen> {
                             child: FutureBuilder<List<ItemModel>>(
                                 future: ItemService().getUserItems(
                                     // userModel.userKey,
-                                  itemModel.userKey,
+                                    itemModel.userKey,
                                     itemKey: widget.itemKey),
                                 builder: (context, snapshot) {
                                   if (snapshot.hasData) {
@@ -245,7 +223,7 @@ class _ItemDetailScreenState extends State<ItemDetailScreen> {
                                         padding: EdgeInsets.zero,
                                         crossAxisCount: 2,
                                         shrinkWrap: true,
-                                        physics: NeverScrollableScrollPhysics(),
+                                        physics: const NeverScrollableScrollPhysics(),
                                         mainAxisSpacing: 10,
                                         crossAxisSpacing: 10,
                                         childAspectRatio: 6 / 7,
@@ -261,67 +239,8 @@ class _ItemDetailScreenState extends State<ItemDetailScreen> {
                           ),
                         ],
                       ),
-                      bottomNavigationBar: SafeArea(
-                        top: false,
-                        bottom: true,
-                        child: Container(
-                          height: 80,
-                          decoration: BoxDecoration(
-                              border: Border(
-                                  top: BorderSide(color: Colors.grey[300]!))),
-                          child: Padding(
-                            padding: const EdgeInsets.all(10.0),
-                            child: Row(
-                              children: [
-                                IconButton(
-                                    onPressed: () {},
-                                    icon: Icon(
-                                      Icons.favorite_outline,
-                                      color: Colors.grey,
-                                    )),
-                                VerticalDivider(
-                                  thickness: 1,
-                                  width: 10 * 2 + 1,
-                                  indent: 10,
-                                  endIndent: 10,
-                                ),
-                                SizedBox(
-                                  width: 10,
-                                ),
-                                Column(
-                                  mainAxisAlignment:
-                                      MainAxisAlignment.spaceEvenly,
-                                  crossAxisAlignment: CrossAxisAlignment.start,
-                                  children: [
-                                    Text(
-                                      '${itemModel.price}원',
-                                      style: TextStyle(
-                                          fontWeight: FontWeight.bold,
-                                          fontSize: 18),
-                                    ),
-                                    Text(
-                                      '가격 제안 불가',
-                                      style: TextStyle(
-                                          fontWeight: FontWeight.bold,
-                                          color: Colors.grey,
-                                          fontSize: 16),
-                                    )
-                                  ],
-                                ),
-                                Expanded(
-                                  child: Container(),
-                                ),
-                                TextButton(
-                                  onPressed: () {
-                                    _goToChatroom(itemModel,userModel);
-                                  },
-                                  child: Text('채팅하기'),
-                                )
-                              ],
-                            ),
-                          ),
-                        ),
-                      ),
+                      bottomNavigationBar:
+                          _bottomNavigationBar(itemModel, userModel),
                     ),
                     _forAppBarColor()
                   ],
@@ -331,11 +250,110 @@ class _ItemDetailScreenState extends State<ItemDetailScreen> {
           }
           return Container(
               color: Colors.white,
-              child: Center(child: CircularProgressIndicator()));
+              child: const Center(child: CircularProgressIndicator()));
         });
   }
 
-  Widget _userSection(UserModel userModel,ItemModel itemModel) {
+  SliverAppBar _imageAppBar(ItemModel itemModel, BuildContext context) {
+    return SliverAppBar(
+                          expandedHeight: _size!.width,
+                          pinned: true,
+                          flexibleSpace: FlexibleSpaceBar(
+                            centerTitle: true,
+                            title: SmoothPageIndicator(
+                                controller: _pageController, // PageController
+                                count: itemModel.imageDownUrl.length,
+                                effect: WormEffect(
+                                    activeDotColor:
+                                        Theme.of(context).primaryColor,
+                                    dotHeight: 10,
+                                    dotWidth: 10), // your preferred effect
+                                onDotClicked: (index) {}),
+                            background: PageView.builder(
+                              controller: _pageController,
+                              allowImplicitScrolling: true,
+                              itemBuilder: (BuildContext context, int index) {
+                                return Image.network(
+                                  itemModel.imageDownUrl[index],
+                                  fit: BoxFit.cover,
+                                  scale: 0.1,
+                                  loadingBuilder: (BuildContext context, Widget child, ImageChunkEvent? loadingProgress){
+                                    if(loadingProgress == null){
+                                      return child;
+                                    }
+                                    return const Center(
+                                        child: CircularProgressIndicator());
+                                  },
+                                );
+                              },
+                              itemCount: itemModel.imageDownUrl.length,
+                            ),
+                          ),
+                        );
+  }
+
+  SafeArea _bottomNavigationBar(ItemModel itemModel, UserModel userModel) {
+    return SafeArea(
+      top: false,
+      bottom: true,
+      child: Container(
+        height: 80,
+        decoration: BoxDecoration(
+            border: Border(top: BorderSide(color: Colors.grey[300]!))),
+        child: Padding(
+          padding: const EdgeInsets.all(10.0),
+          child: Row(
+            children: [
+              IconButton(
+                  onPressed: () {},
+                  icon: const Icon(
+                    Icons.favorite_outline,
+                    color: Colors.grey,
+                  )),
+              const VerticalDivider(
+                thickness: 1,
+                width: 10 * 2 + 1,
+                indent: 10,
+                endIndent: 10,
+              ),
+              const SizedBox(
+                width: 10,
+              ),
+              Column(
+                mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(
+                    '${itemModel.price}원',
+                    style: const TextStyle(
+                        fontWeight: FontWeight.bold, fontSize: 18),
+                  ),
+                  const Text(
+                    '가격 제안 불가',
+                    style: TextStyle(
+                        fontWeight: FontWeight.bold,
+                        color: Colors.grey,
+                        fontSize: 16),
+                  )
+                ],
+              ),
+              Expanded(
+                child: Container(),
+              ),
+              TextButton(
+                onPressed: () {
+                  _goToChatroom(itemModel, userModel);
+                },
+                child: const Text('채팅하기'),
+              )
+            ],
+          ),
+        ),
+      ),
+    );
+  }
+
+  Widget _userSection(UserModel userModel, ItemModel itemModel) {
     return Row(
       children: [
         Icon(
@@ -343,7 +361,7 @@ class _ItemDetailScreenState extends State<ItemDetailScreen> {
           color: Colors.grey[350],
           size: 50,
         ),
-        SizedBox(
+        const SizedBox(
           width: 10,
         ),
         SizedBox(
@@ -353,12 +371,12 @@ class _ItemDetailScreenState extends State<ItemDetailScreen> {
             mainAxisAlignment: MainAxisAlignment.spaceAround,
             children: [
               Text(
-                userModel.phoneNumber.substring(9),
-                style: TextStyle(fontWeight: FontWeight.bold, fontSize: 18),
+                itemModel.userKey.substring(18),
+                style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 18),
               ),
               Text(
-                itemModel.address,
-                style: TextStyle(fontSize: 15),
+                itemModel.address.substring(5),
+                style: TextStyle(fontSize: 10),
               )
             ],
           ),
@@ -372,7 +390,7 @@ class _ItemDetailScreenState extends State<ItemDetailScreen> {
                 children: [
                   Column(
                     children: [
-                      Text(
+                      const Text(
                         '36.6°C',
                         style: TextStyle(
                             color: Colors.blue,
@@ -392,20 +410,20 @@ class _ItemDetailScreenState extends State<ItemDetailScreen> {
                           ))
                     ],
                   ),
-                  SizedBox(
+                  const SizedBox(
                     width: 10,
                   ),
-                  Icon(
+                  const Icon(
                     CupertinoIcons.smiley,
                     color: Colors.orange,
                     size: 30,
                   )
                 ],
               ),
-              SizedBox(
+              const SizedBox(
                 height: 8,
               ),
-              Text(
+              const Text(
                 '매너온도',
                 style: TextStyle(
                     color: Colors.grey, decoration: TextDecoration.underline),

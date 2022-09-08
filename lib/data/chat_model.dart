@@ -4,6 +4,12 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import '../constants/keys.dart';
 
 class ChatModel {
+  late String msg;
+  late DateTime createdDate;
+  late String userKey;
+  String? chatKey;
+  DocumentReference? reference;
+
   ChatModel({
       required this.msg,
       required this.createdDate,
@@ -11,17 +17,12 @@ class ChatModel {
       this.reference,});
 
   ChatModel.fromJson(Map<String, dynamic> json, this.chatKey, this.reference) {
-    msg = json[DOC_MSG];
+    msg = json[DOC_MSG]??'';
     createdDate = json[DOC_CREATEDDATE]== null
         ? DateTime.now()
         : (json[DOC_CREATEDDATE] as Timestamp).toDate();
     userKey = json[DOC_USERKEY];
   }
-  late String msg;
-  late DateTime createdDate;
-  late String userKey;
-  late String chatKey;
-  DocumentReference? reference;
 
   Map<String, dynamic> toJson() {
     final map = <String, dynamic>{};

@@ -11,7 +11,12 @@ class CategoryInputScreen extends StatelessWidget {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text('카테고리 선택'),
+        leading: IconButton(
+            onPressed: () {
+              Beamer.of(context).beamBack();
+            },
+            icon: const Icon(Icons.arrow_back_ios)),
+        title: const Text('카테고리 선택'),
       ),
       body: ListView.separated(
           itemBuilder: (context, index) {
@@ -20,8 +25,9 @@ class CategoryInputScreen extends StatelessWidget {
                 context.read<CategoryNotifier>().set(categories[index]);
                 Beamer.of(context).beamBack();
                 // context.beamBack();
+                // Navigator.of(context).maybePop();
               },
-              contentPadding: EdgeInsets.symmetric(horizontal: 10),
+              contentPadding: const EdgeInsets.symmetric(horizontal: 10),
               title: Text(
                 categories[index],
                 style: TextStyle(
@@ -33,7 +39,7 @@ class CategoryInputScreen extends StatelessWidget {
             );
           },
           separatorBuilder: (context, index) {
-            return Divider(height: 1, thickness: 1);
+            return const Divider(height: 1, thickness: 1);
           },
           itemCount: categories.length),
     );
